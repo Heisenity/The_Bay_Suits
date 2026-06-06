@@ -1,0 +1,16 @@
+{
+  "name": "the-bay-suites-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n WEB,API -c blue,magenta \"npm run dev -w @bay/web\" \"npm run start:dev -w @bay/api\"",
+    "build": "npm run build -w @bay/api && npm run build -w @bay/web",
+    "lint": "npm run lint -w @bay/web && npm run lint -w @bay/api",
+    "start": "concurrently -n WEB,API -c blue,magenta \"npm run start -w @bay/web\" \"npm run start:prod -w @bay/api\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
