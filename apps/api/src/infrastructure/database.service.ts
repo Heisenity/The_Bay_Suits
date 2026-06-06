@@ -9,6 +9,7 @@ export type BookingRecord = {
   guestName: string;
   email: string;
   phone?: string;
+  notes?: string;
   checkIn: string;
   checkOut: string;
   guests: number;
@@ -35,7 +36,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       await this.pool.query("select 1");
       await this.initializeSchema();
       const result = await this.pool.query<BookingRecord>(
-        `select id, confirmation, property_id as "propertyId", guest_name as "guestName", email, phone,
+        `select id, confirmation, property_id as "propertyId", guest_name as "guestName", email, phone, notes,
          check_in::text as "checkIn", check_out::text as "checkOut", guests, total::float, status,
          created_at::text as "createdAt" from bookings`
       );
@@ -61,6 +62,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         guest_name varchar(160) not null,
         email varchar(255) not null,
         phone varchar(80),
+        notes text,
         check_in date not null,
         check_out date not null,
         guests integer not null,
@@ -70,6 +72,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         constraint valid_booking_dates check (check_out > check_in)
       );
       create index if not exists bookings_property_dates_idx on bookings(property_id, check_in, check_out);
+      alter table bookings add column if not exists notes text;
       create table if not exists leads (
         id uuid primary key,
         kind varchar(40) not null,
@@ -112,9 +115,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     if (this.pool) {
       await this.pool.query(
         `insert into bookings
-          (id, confirmation, property_id, guest_name, email, phone, check_in, check_out, guests, total, status)
-         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
-        [booking.id, booking.confirmation, booking.propertyId, booking.guestName, booking.email, booking.phone || null, booking.checkIn, booking.checkOut, booking.guests, booking.total, booking.status]
+          (id, confirmation, property_id, guest_name, email, phone, notes, check_in, check_out, guests, total, status)
+         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        [booking.id, booking.confirmation, booking.propertyId, booking.guestName, booking.email, booking.phone || null, booking.notes || null, booking.checkIn, booking.checkOut, booking.guests, booking.total, booking.status]
       );
     }
     this.bookings.push(booking);

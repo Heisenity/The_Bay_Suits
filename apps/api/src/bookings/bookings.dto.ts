@@ -32,4 +32,13 @@ export class CreateBookingDto extends QuoteDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @IsString()
+  cardNumber!: string;
+
+  @IsString()
+  cardExpiry!: string;
+
+  @IsString()
+  cardCvv!: string;
 }

@@ -25,7 +25,7 @@ export function CheckoutForm({ property }: { property: Property }) {
   const booking = useMutation({
     mutationFn: createBooking,
     onSuccess: (data) => router.push(`/booking/success?confirmation=${data.confirmation}`),
-    onError: () => setError("We could not complete the booking. Please check the API or try again.")
+    onError: (error) => setError(error instanceof Error ? error.message : "We could not complete the booking. Please try again.")
   });
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -40,7 +40,10 @@ export function CheckoutForm({ property }: { property: Property }) {
       guestName: `${form.get("firstName")} ${form.get("lastName")}`,
       email: form.get("email"),
       phone: form.get("phone"),
-      notes: form.get("notes")
+      notes: form.get("notes"),
+      cardNumber: form.get("cardNumber"),
+      cardExpiry: form.get("cardExpiry"),
+      cardCvv: form.get("cardCvv")
     });
   }
 
@@ -64,14 +67,15 @@ export function CheckoutForm({ property }: { property: Property }) {
             <span className="flex items-center gap-2 text-xs text-ink/45"><LockKeyhole className="h-3.5 w-3.5" /> Secure checkout</span>
           </div>
           <div className="mt-6 grid gap-4">
-            <input className="field" placeholder="Card number" defaultValue="4242 4242 4242 4242" required />
+            <input className="field" name="cardNumber" placeholder="Demo card number" defaultValue="123456789" required />
             <div className="grid grid-cols-2 gap-4">
-              <input className="field" placeholder="MM / YY" defaultValue="12 / 30" required />
-              <input className="field" placeholder="CVC" defaultValue="123" required />
+              <input className="field" name="cardExpiry" placeholder="MM / YY" defaultValue="12 / 30" required />
+              <input className="field" name="cardCvv" placeholder="CVV" defaultValue="000" required />
             </div>
           </div>
           <p className="mt-4 text-xs leading-5 text-ink/45">
-            This development checkout does not charge a real card. Connect Stripe before production.
+            Demo gateway only. Use card number <strong>123456789</strong>, CVV <strong>000</strong>, and any expiry in
+            <strong> MM / YY</strong> format.
           </p>
         </section>
       </div>

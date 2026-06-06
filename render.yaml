@@ -1,0 +1,48 @@
+services:
+  - type: web
+    runtime: node
+    name: bay-suites-api
+    repo: https://github.com/Heisenity/The_Bay_Suits
+    branch: main
+    plan: free
+    buildCommand: npm install && npm run build -w @bay/api
+    startCommand: npm run start:prod -w @bay/api
+    envVars:
+      - key: WEB_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bay-suites-db
+          property: connectionString
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_SECURE
+        value: "false"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+      - key: NOTIFICATION_EMAIL
+        sync: false
+
+  - type: web
+    runtime: node
+    name: bay-suites-web
+    repo: https://github.com/Heisenity/The_Bay_Suits
+    branch: main
+    plan: free
+    buildCommand: npm install && npm run build -w @bay/web
+    startCommand: npm run start -w @bay/web
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_SOCKET_URL
+        sync: false
+
+databases:
+  - name: bay-suites-db
+    plan: free

@@ -6,7 +6,7 @@ import { submitLead } from "@/lib/api";
 import { Button } from "./ui/button";
 
 export function LeadForm({ type = "contacts" }: { type?: "contacts" | "assessments" }) {
-  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [step, setStep] = useState(0);
   const formRef = useRef<HTMLFormElement | null>(null);
   const isAssessment = type === "assessments";
@@ -26,10 +26,15 @@ export function LeadForm({ type = "contacts" }: { type?: "contacts" | "assessmen
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
-    const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
-    await submitLead(type, payload);
-    event.currentTarget.reset();
-    setStatus("success");
+    try {
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      await submitLead(type, payload);
+      event.currentTarget.reset();
+      setStep(0);
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
   }
 
   return (
@@ -116,6 +121,11 @@ export function LeadForm({ type = "contacts" }: { type?: "contacts" | "assessmen
       {status === "success" && (
         <p className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-emerald-50 p-3 text-center text-sm text-emerald-800">
           <CheckCircle2 className="h-4 w-4" /> Thank you. Our team will be in touch shortly.
+        </p>
+      )}
+      {status === "error" && (
+        <p className="mt-4 rounded-xl bg-red-50 p-3 text-center text-sm text-red-700">
+          We could not send your form right now. Please try again in a moment.
         </p>
       )}
     </form>

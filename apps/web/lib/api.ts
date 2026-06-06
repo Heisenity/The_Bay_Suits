@@ -9,7 +9,18 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     ...options,
     headers: { "Content-Type": "application/json", ...options?.headers }
   });
-  if (!response.ok) throw new Error("Request failed");
+  if (!response.ok) {
+    let message = "Request failed";
+    try {
+      const payload = await response.json();
+      if (payload?.message) {
+        message = Array.isArray(payload.message) ? payload.message.join(", ") : String(payload.message);
+      }
+    } catch {
+      message = response.statusText || message;
+    }
+    throw new Error(message);
+  }
   return response.json() as Promise<T>;
 }
 
@@ -74,7 +85,10 @@ export async function submitLead(path: "contacts" | "assessments", payload: Reco
       body: JSON.stringify(payload)
     });
   } catch {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return { success: true };
+    if (process.env.NODE_ENV !== "production") {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return { success: true };
+    }
+    throw new Error("We could not send your form. Please try again.");
   }
 }
