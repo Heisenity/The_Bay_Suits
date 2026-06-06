@@ -57,13 +57,35 @@ function getCityIndex() {
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q")?.trim().toLocaleLowerCase() || "";
   const countryCode = request.nextUrl.searchParams.get("country");
+  const showAll = request.nextUrl.searchParams.get("all") === "1";
   const allCities = getCityIndex();
 
   if (!query) {
+    if (showAll) {
+      const featuredLabels = new Set(featured);
+      const featuredCities = featured
+        .map((label) => allCities.find((city) => city.label === label))
+        .filter(Boolean);
+      const remainingCities = allCities
+        .filter((city) => !featuredLabels.has(city.label))
+        .sort(
+          (a, b) =>
+            a.country.localeCompare(b.country) ||
+            a.state.localeCompare(b.state) ||
+            a.city.localeCompare(b.city)
+        )
+        .slice(0, 140);
+
+      return NextResponse.json([...featuredCities, ...remainingCities], {
+        headers: { "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400" }
+      });
+    }
+
     return NextResponse.json(
       featured
         .map((label) => allCities.find((city) => city.label === label))
         .filter(Boolean)
+        .slice(0, 10)
     );
   }
 

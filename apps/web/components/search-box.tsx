@@ -10,6 +10,7 @@ import {
   Check,
   ChevronDown,
   Clock3,
+  Globe2,
   LoaderCircle,
   MapPin,
   Minus,
@@ -67,6 +68,7 @@ export function SearchBox({
   const [cityPickerOpen, setCityPickerOpen] = useState(false);
   const [guestPickerOpen, setGuestPickerOpen] = useState(false);
   const [cityLoading, setCityLoading] = useState(false);
+  const [showAllCities, setShowAllCities] = useState(false);
   const [checkIn, setCheckIn] = useState(initialCheckIn || format(today));
   const [checkOut, setCheckOut] = useState(initialCheckOut || format(later));
   const [stayType, setStayType] = useState<"short" | "long">(initialStayType);
@@ -81,10 +83,15 @@ export function SearchBox({
 
   useEffect(() => {
     const id = ++requestId.current;
+    const query = where.trim();
     const timer = window.setTimeout(async () => {
       setCityLoading(true);
       try {
-        const response = await fetch(`/api/cities?q=${encodeURIComponent(where)}`);
+        const response = await fetch(
+          query
+            ? `/api/cities?q=${encodeURIComponent(query)}`
+            : `/api/cities${showAllCities ? "?all=1" : ""}`
+        );
         const results = response.ok ? await response.json() : [];
         if (id === requestId.current) setCities(results);
       } finally {
@@ -92,6 +99,12 @@ export function SearchBox({
       }
     }, 180);
     return () => window.clearTimeout(timer);
+  }, [where, showAllCities]);
+
+  useEffect(() => {
+    if (where.trim()) {
+      setShowAllCities(false);
+    }
   }, [where]);
 
   const travellingGuests = guests.adults + guests.children;
@@ -184,39 +197,75 @@ export function SearchBox({
         </span>
         {cityLoading && <LoaderCircle className="h-4 w-4 animate-spin text-ink/35" />}
         {cityPickerOpen && (
-          <div className="absolute left-0 top-[calc(100%+12px)] z-[1000] max-h-80 w-full min-w-[310px] overflow-y-auto rounded-2xl border border-ink/10 bg-white p-2 shadow-soft">
-            <button
-              type="button"
-              onMouseDown={() => setWhere("All locations")}
-              className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-linen"
-            >
-              <span>
-                <strong className="block">All locations</strong>
-                <span className="text-xs text-ink/45">Canada, United States, India and Bangladesh</span>
-              </span>
-              {where === "All locations" && <Check className="h-4 w-4 text-champagne" />}
-            </button>
-            {cities.map((city) => (
+          <div className="absolute left-0 top-[calc(100%+12px)] z-[1000] w-[min(520px,calc(100vw-40px))] overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-soft">
+            <div className="border-b border-ink/8 px-4 py-3">
+              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/40">
+                {where.trim() ? "Matching cities" : "Popular cities"}
+              </p>
+              <p className="mt-1 text-xs text-ink/45">
+                {where.trim()
+                  ? "Search across Canada, the United States, India and Bangladesh."
+                  : "Start with a curated list, then expand to the full directory."}
+              </p>
+            </div>
+
+            <div className="max-h-[320px] overflow-y-auto p-2">
               <button
                 type="button"
-                key={`${city.countryCode}-${city.state}-${city.city}`}
                 onMouseDown={() => {
-                  setWhere(city.label);
-                  setCityPickerOpen(false);
+                  setWhere("All locations");
+                  setShowAllCities(false);
                 }}
-                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm hover:bg-linen"
+                className="flex w-full items-center justify-between rounded-[1.1rem] border border-transparent px-3 py-3 text-left text-sm transition hover:border-ink/8 hover:bg-linen"
               >
                 <span className="min-w-0">
-                  <strong className="block truncate">{city.city}</strong>
-                  <span className="block truncate text-xs text-ink/45">{city.state}, {city.country}</span>
+                  <strong className="block">All locations</strong>
+                  <span className="text-xs text-ink/45">Canada, United States, India and Bangladesh</span>
                 </span>
-                <span className="ml-3 rounded-full bg-linen px-2 py-1 text-[9px] font-bold">{city.countryCode}</span>
+                {where === "All locations" && <Check className="h-4 w-4 text-champagne" />}
               </button>
-            ))}
-            {!cityLoading && cities.length === 0 && where !== "All locations" && (
-              <p className="px-3 py-5 text-center text-xs leading-5 text-ink/45">
-                No city found. Try a city or region in Canada, the United States, India, or Bangladesh.
-              </p>
+
+              <div className="mt-1 grid gap-1.5">
+                {cities.map((city) => (
+                  <button
+                    type="button"
+                    key={`${city.countryCode}-${city.state}-${city.city}`}
+                    onMouseDown={() => {
+                      setWhere(city.label);
+                      setCityPickerOpen(false);
+                      setShowAllCities(false);
+                    }}
+                    className="flex w-full items-center justify-between rounded-[1.1rem] border border-transparent px-3 py-3 text-left text-sm transition hover:border-ink/8 hover:bg-linen"
+                  >
+                    <span className="min-w-0">
+                      <strong className="block truncate">{city.city}</strong>
+                      <span className="block truncate text-xs text-ink/45">{city.state}, {city.country}</span>
+                    </span>
+                    <span className="ml-3 rounded-full bg-linen px-2.5 py-1 text-[9px] font-bold tracking-[0.12em] text-ink/65">
+                      {city.countryCode}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {!cityLoading && cities.length === 0 && where.trim() !== "" && (
+                <p className="px-3 py-5 text-center text-xs leading-5 text-ink/45">
+                  No city found. Try a city or region in Canada, the United States, India, or Bangladesh.
+                </p>
+              )}
+            </div>
+
+            {!where.trim() && (
+              <div className="border-t border-ink/8 bg-white/95 px-4 py-3 backdrop-blur-sm">
+                <button
+                  type="button"
+                  onMouseDown={() => setShowAllCities((value) => !value)}
+                  className="flex w-full items-center justify-center gap-2 rounded-full border border-ink/10 bg-linen px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-ink hover:text-white"
+                >
+                  <Globe2 className="h-4 w-4" />
+                  {showAllCities ? "Show curated cities" : "More cities"}
+                </button>
+              </div>
             )}
           </div>
         )}
