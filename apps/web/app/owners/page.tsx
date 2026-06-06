@@ -21,7 +21,7 @@ export default function OwnersPage() {
             <div className="mt-8 space-y-4">{points.map((point) => <p key={point} className="flex items-center gap-3 text-sm"><span className="grid h-7 w-7 place-items-center rounded-full bg-linen"><Check className="h-3.5 w-3.5 text-champagne" /></span>{point}</p>)}</div>
             <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/property-assessment" className={cn(buttonVariants({ size: "lg" }))}>Get a free assessment <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/owner-portal" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>Owner sign in</Link>
+              <Link href="/owner-portal" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>Admin sign in</Link>
             </div>
           </div>
         </div>
