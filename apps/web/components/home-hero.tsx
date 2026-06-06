@@ -6,6 +6,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { ArrowDown, ArrowRight, Star } from "lucide-react";
 import { useRef } from "react";
 import { SearchBox } from "./search-box";
+import { MagneticLink } from "./magnetic-link";
 import { buttonVariants } from "./ui/button";
 import { cn } from "@/lib/utils";
 
@@ -18,7 +19,7 @@ export function HomeHero() {
   const opacity = useTransform(scrollYProgress, [0, 0.82], [1, 0]);
 
   return (
-    <section ref={hero} className="relative z-20 isolate overflow-visible bg-ink text-white md:min-h-[800px]">
+    <section id="home" ref={hero} className="relative z-20 isolate scroll-mt-[76px] overflow-visible bg-ink text-white md:min-h-[800px]">
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div style={{ y: imageY }} className="absolute -inset-y-[14%] inset-x-0">
           <Image
@@ -99,10 +100,10 @@ export function HomeHero() {
           transition={{ duration: 0.8, delay: 0.75 }}
           className="mt-9 flex flex-wrap gap-3"
         >
-          <Link href="/stays" className={cn(buttonVariants({ variant: "gold", size: "lg" }), "group")}>
+          <MagneticLink href="/stays" className={cn(buttonVariants({ variant: "gold", size: "lg" }), "group")}>
             Explore our suites
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-          </Link>
+          </MagneticLink>
           <Link
             href="/owners"
             className="hidden items-center rounded-full border border-white/25 px-8 py-4 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white hover:text-ink sm:inline-flex"

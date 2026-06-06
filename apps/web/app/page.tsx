@@ -3,11 +3,13 @@ import dynamic from "next/dynamic";
 import { ArrowRight, BadgeCheck, Building2, KeyRound } from "lucide-react";
 import { HomeHero } from "@/components/home-hero";
 import { MarqueeBand } from "@/components/marquee-band";
-import { PropertyCard } from "@/components/property-card";
+import { EditorialResidences } from "@/components/editorial-residences";
 import { ProofStrip } from "@/components/proof-strip";
 import { DistributionNetwork } from "@/components/distribution-network";
 import { Reveal } from "@/components/reveal";
 import { StayStandard } from "@/components/stay-standard";
+import { SectionIndex } from "@/components/section-index";
+import { MagneticLink } from "@/components/magnetic-link";
 import { properties, services } from "@/lib/data";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,43 +20,16 @@ const ReviewCards = dynamic(() => import("@/components/review-cards").then((modu
 export default function HomePage() {
   return (
     <>
+      <SectionIndex />
       <HomeHero />
       <MarqueeBand />
-
-      <section id="curated-stays" className="section-pad bg-[#fbfaf7]">
-        <div className="container-wide">
-          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
-            <Reveal>
-              <p className="eyebrow">Curated stays</p>
-              <h2 className="mt-4 max-w-2xl font-display text-5xl leading-none md:text-7xl">
-                A better way to feel at home.
-              </h2>
-            </Reveal>
-            <Reveal delay={0.12} className="max-w-md">
-              <p className="text-sm leading-7 text-ink/55">
-              Every residence is inspected, professionally prepared and supported around the
-              clock. The result is a stay that feels simple from the first click.
-              </p>
-            </Reveal>
-          </div>
-          <div className="mt-14 grid gap-7 lg:grid-cols-3">
-            {properties.slice(0, 3).map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <Link href="/stays" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
-              View all residences <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      <EditorialResidences properties={properties} />
 
       <ProofStrip />
       <StayStandard />
       <DistributionNetwork />
 
-      <section className="section-pad">
+      <section id="services" className="section-pad scroll-mt-[76px]">
         <div className="container-wide">
           <Reveal className="text-center">
             <p className="eyebrow">One team, every stay</p>
@@ -100,9 +75,11 @@ export default function HomePage() {
         <Reveal className="relative mx-auto max-w-4xl">
           <p className="text-xs font-bold uppercase tracking-[0.26em]">Your next stay starts here</p>
           <h2 className="mt-5 font-display text-6xl leading-none md:text-8xl">Make yourself at home.</h2>
-          <Link href="/stays" className={cn(buttonVariants({ size: "lg" }), "mt-9")}>
-            Find your suite <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="mt-9">
+            <MagneticLink href="/stays" className={cn(buttonVariants({ size: "lg" }))}>
+              Find your suite <ArrowRight className="h-4 w-4" />
+            </MagneticLink>
+          </div>
         </Reveal>
       </section>
     </>

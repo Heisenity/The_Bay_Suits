@@ -16,7 +16,7 @@ export function ReviewCards() {
   }, [reduceMotion]);
 
   return (
-    <section className="section-pad overflow-hidden bg-linen">
+    <section id="guest-stories" className="section-pad scroll-mt-[76px] overflow-hidden bg-linen">
       <div className="container-wide">
         <div className="flex flex-col justify-between gap-7 md:flex-row md:items-end">
           <div>

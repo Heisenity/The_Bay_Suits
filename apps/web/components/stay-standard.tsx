@@ -41,7 +41,7 @@ export function StayStandard() {
   const selected = standards[active];
 
   return (
-    <section className="bg-ink text-white">
+    <section id="stay-standard" className="scroll-mt-[76px] bg-ink text-white">
       <div className="container-wide grid min-h-[760px] lg:grid-cols-[1.08fr_.92fr]">
         <div className="relative min-h-[520px] overflow-hidden lg:sticky lg:top-[76px] lg:h-[calc(100vh-76px)] lg:min-h-[680px]">
           <AnimatePresence mode="wait">
