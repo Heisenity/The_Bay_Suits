@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import { Resend } from "resend";
+import { BrevoClient } from "@getbrevo/brevo";
 
 type LeadNotificationInput = {
   kind: string;
@@ -22,24 +22,24 @@ type BookingNotificationInput = {
 @Injectable()
 export class MailService implements OnModuleInit {
   private readonly logger = new Logger(MailService.name);
-  private client?: Resend;
+  private client?: BrevoClient;
   private fromAddress?: string;
   private notificationEmail?: string;
   private ready = false;
 
   onModuleInit() {
-    const apiKey = process.env.RESEND_API_KEY;
-    this.fromAddress = process.env.RESEND_FROM;
+    const apiKey = process.env.BREVO_API_KEY;
+    this.fromAddress = process.env.BREVO_FROM;
     this.notificationEmail = process.env.NOTIFICATION_EMAIL;
 
     if (!apiKey || !this.fromAddress) {
-      this.logger.warn("Resend settings are incomplete; email notifications are disabled.");
+      this.logger.warn("Brevo settings are incomplete; email notifications are disabled.");
       return;
     }
 
-    this.client = new Resend(apiKey);
+    this.client = new BrevoClient({ apiKey });
     this.ready = true;
-    this.logger.log("Resend mailer is ready.");
+    this.logger.log("Brevo mailer is ready.");
   }
 
   async sendLeadNotification({ kind, payload }: LeadNotificationInput) {
@@ -99,18 +99,18 @@ export class MailService implements OnModuleInit {
     }
 
     try {
-      const { error } = await this.client.emails.send({
-        from: this.fromAddress,
-        to: [to],
-        replyTo: replyTo ? [replyTo] : undefined,
+      const [senderName, senderEmail] = this.parseSender(this.fromAddress);
+      await this.client.transactionalEmails.sendTransacEmail({
         subject,
-        text,
-        html
+        textContent: text,
+        htmlContent: html,
+        sender: {
+          name: senderName,
+          email: senderEmail
+        },
+        to: [{ email: to }],
+        replyTo: replyTo ? { email: replyTo } : undefined
       });
-
-      if (error) {
-        this.logger.error(`Email delivery failed for "${subject}": ${error.message}`);
-      }
     } catch (error) {
       this.logger.error(`Email delivery failed for "${subject}": ${String(error)}`);
     }
@@ -202,6 +202,12 @@ export class MailService implements OnModuleInit {
 
   private toLabel(key: string) {
     return key.replace(/([A-Z])/g, " $1").replace(/^./, (char) => char.toUpperCase());
+  }
+
+  private parseSender(value: string): [string, string] {
+    const match = value.match(/^(.*?)\s*<([^>]+)>$/);
+    if (match) return [match[1].trim(), match[2].trim()];
+    return ["The Bay Suites", value.trim()];
   }
 
   private escapeHtml(value: string) {

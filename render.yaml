@@ -14,9 +14,9 @@ services:
         fromDatabase:
           name: bay-suites-db
           property: connectionString
-      - key: RESEND_API_KEY
+      - key: BREVO_API_KEY
         sync: false
-      - key: RESEND_FROM
+      - key: BREVO_FROM
         sync: false
       - key: NOTIFICATION_EMAIL
         sync: false
