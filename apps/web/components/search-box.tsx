@@ -1,12 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { motion, useReducedMotion } from "framer-motion";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import {
   BedDouble,
+  CalendarRange,
   CalendarDays,
   Check,
   ChevronDown,
+  Clock3,
   LoaderCircle,
   MapPin,
   Minus,
@@ -54,6 +57,7 @@ export function SearchBox({
   initialStayType = "short"
 }: SearchBoxProps) {
   const router = useRouter();
+  const reduceMotion = useReducedMotion();
   const today = new Date();
   const later = new Date(today);
   later.setDate(today.getDate() + 3);
@@ -128,19 +132,37 @@ export function SearchBox({
           : "lg:grid-cols-[1.2fr_.8fr_.8fr_.75fr_.95fr_auto]"
       }`}
     >
-      <div className="col-span-2 flex rounded-2xl bg-linen p-1 lg:col-span-full">
-        {(["short", "long"] as const).map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => setStayType(type)}
-            className={`flex-1 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] transition ${
-              stayType === type ? "bg-ink text-white shadow-sm" : "text-ink/45 hover:text-ink"
-            }`}
-          >
-            {type === "short" ? "Short-term stays" : "Long-term stays"}
-          </button>
-        ))}
+      <div className="col-span-2 flex justify-center pb-0.5 lg:col-span-full">
+        <div
+          className="grid w-full max-w-[420px] grid-cols-2 rounded-full border border-ink/10 bg-linen/80 p-1 shadow-[inset_0_1px_2px_rgba(15,31,53,.04)] backdrop-blur-sm"
+          aria-label="Choose stay length"
+        >
+          {(["short", "long"] as const).map((type) => {
+            const active = stayType === type;
+            const Icon = type === "short" ? Clock3 : CalendarRange;
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => setStayType(type)}
+                aria-pressed={active}
+                className={`relative isolate flex items-center justify-center gap-2 overflow-hidden rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] transition-colors sm:text-[11px] ${
+                  active ? "text-white" : "text-ink/45 hover:text-ink"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="active-stay-type"
+                    transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
+                    className="absolute inset-0 -z-10 rounded-full bg-ink shadow-[0_6px_18px_rgba(15,31,53,.18)]"
+                  />
+                )}
+                <Icon className={`h-3.5 w-3.5 ${active ? "text-champagne" : "text-ink/35"}`} />
+                <span>{type === "short" ? "Short stay" : "Extended stay"}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <label className="relative col-span-2 flex min-w-0 items-center gap-3 rounded-2xl px-3 py-1.5 hover:bg-linen sm:py-2 lg:col-span-1">
