@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
-import nodemailer, { Transporter } from "nodemailer";
+import { Resend } from "resend";
 
 type LeadNotificationInput = {
   kind: string;
@@ -22,42 +22,24 @@ type BookingNotificationInput = {
 @Injectable()
 export class MailService implements OnModuleInit {
   private readonly logger = new Logger(MailService.name);
-  private transporter?: Transporter;
+  private client?: Resend;
   private fromAddress?: string;
   private notificationEmail?: string;
   private ready = false;
 
-  async onModuleInit() {
-    this.fromAddress = process.env.SMTP_FROM;
+  onModuleInit() {
+    const apiKey = process.env.RESEND_API_KEY;
+    this.fromAddress = process.env.RESEND_FROM;
     this.notificationEmail = process.env.NOTIFICATION_EMAIL;
 
-    const host = process.env.SMTP_HOST;
-    const port = Number(process.env.SMTP_PORT || "587");
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-    const secure = process.env.SMTP_SECURE === "true";
-
-    if (!host || !user || !pass || !this.fromAddress) {
-      this.logger.warn("SMTP settings are incomplete; email notifications are disabled.");
+    if (!apiKey || !this.fromAddress) {
+      this.logger.warn("Resend settings are incomplete; email notifications are disabled.");
       return;
     }
 
-    this.transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth: { user, pass }
-    });
-
-    try {
-      await this.transporter.verify();
-      this.ready = true;
-      this.logger.log("SMTP mailer is ready.");
-    } catch (error) {
-      this.logger.error(`SMTP verification failed: ${String(error)}`);
-      this.transporter = undefined;
-      this.ready = false;
-    }
+    this.client = new Resend(apiKey);
+    this.ready = true;
+    this.logger.log("Resend mailer is ready.");
   }
 
   async sendLeadNotification({ kind, payload }: LeadNotificationInput) {
@@ -111,20 +93,24 @@ export class MailService implements OnModuleInit {
     html: string;
     replyTo?: string;
   }) {
-    if (!this.ready || !this.transporter || !this.fromAddress) {
+    if (!this.ready || !this.client || !this.fromAddress) {
       this.logger.warn(`Email skipped for "${subject}" because the mailer is not configured.`);
       return;
     }
 
     try {
-      await this.transporter.sendMail({
+      const { error } = await this.client.emails.send({
         from: this.fromAddress,
-        to,
-        replyTo,
+        to: [to],
+        replyTo: replyTo ? [replyTo] : undefined,
         subject,
         text,
         html
       });
+
+      if (error) {
+        this.logger.error(`Email delivery failed for "${subject}": ${error.message}`);
+      }
     } catch (error) {
       this.logger.error(`Email delivery failed for "${subject}": ${String(error)}`);
     }
