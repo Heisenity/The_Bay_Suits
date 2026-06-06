@@ -14,8 +14,7 @@ const links = [
   { href: "/service-areas", label: "Service areas" },
   { href: "/corporate-rentals", label: "Corporate" },
   { href: "/owners", label: "For owners" },
-  { href: "/cancellation-policy", label: "Cancellation" },
-  { href: "/blog", label: "Journal" }
+  { href: "/owner-portal", label: "Admin portal" }
 ];
 
 export function SiteHeader() {

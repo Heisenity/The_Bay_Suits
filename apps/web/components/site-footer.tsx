@@ -40,9 +40,10 @@ export function SiteFooter() {
             <Link href="/corporate-rentals" className="hover:text-white">Corporate rentals</Link>
             <Link href="/owners" className="hover:text-white">Property management</Link>
             <Link href="/property-assessment" className="hover:text-white">Free assessment</Link>
+            <Link href="/blog" className="hover:text-white">Journal</Link>
             <Link href="/cancellation-policy" className="hover:text-white">Cancellation policy</Link>
             <Link href="/portal" className="hover:text-white">Guest portal</Link>
-            <Link href="/owner-portal" className="hover:text-white">Owner portal</Link>
+            <Link href="/owner-portal" className="hover:text-white">Admin portal</Link>
           </div>
         </div>
         <div>
