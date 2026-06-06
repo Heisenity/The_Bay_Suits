@@ -7,10 +7,25 @@ import { ArrowUpRight, BedDouble, MapPin, Star, Users } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { currency } from "@/lib/utils";
 
-export function PropertyCard({ property }: { property: Property }) {
+type PropertyCardProps = {
+  property: Property;
+  active?: boolean;
+  onHoverStart?: (propertyId: string) => void;
+  onHoverEnd?: () => void;
+};
+
+export function PropertyCard({ property, active = false, onHoverStart, onHoverEnd }: PropertyCardProps) {
   return (
     <motion.article
-      className="group overflow-hidden rounded-[1.75rem] bg-white shadow-[0_12px_45px_rgba(15,31,53,.08)] transition-shadow duration-500 hover:shadow-[0_28px_80px_rgba(15,31,53,.16)]"
+      onMouseEnter={() => onHoverStart?.(property.id)}
+      onMouseLeave={() => onHoverEnd?.()}
+      onFocusCapture={() => onHoverStart?.(property.id)}
+      onBlurCapture={() => onHoverEnd?.()}
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 260, damping: 24 }}
+      className={`group overflow-hidden rounded-[1.75rem] bg-white shadow-[0_12px_45px_rgba(15,31,53,.08)] transition-all duration-500 hover:shadow-[0_28px_80px_rgba(15,31,53,.16)] ${
+        active ? "ring-1 ring-champagne/80 shadow-[0_28px_80px_rgba(201,177,124,.18)]" : ""
+      }`}
     >
       <Link href={`/stays/${property.slug}`} className="relative block aspect-[1.35] overflow-hidden">
         <motion.div
@@ -27,7 +42,7 @@ export function PropertyCard({ property }: { property: Property }) {
             className="object-cover transition duration-700 group-hover:scale-105"
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/45 via-transparent to-transparent opacity-0 transition duration-500 group-hover:opacity-100" />
+        <div className={`absolute inset-0 bg-gradient-to-t from-ink/45 via-transparent to-transparent transition duration-500 ${active ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`} />
         <span className="absolute bottom-4 right-4 grid h-16 w-16 translate-y-5 place-items-center rounded-full bg-champagne text-[10px] font-bold uppercase tracking-[.1em] text-ink opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
           Explore
         </span>
@@ -59,7 +74,9 @@ export function PropertyCard({ property }: { property: Property }) {
         </div>
         <Link
           href={`/stays/${property.slug}`}
-          className="mt-5 flex items-center justify-between rounded-xl bg-linen px-4 py-3 text-sm font-semibold transition group-hover:bg-ink group-hover:text-white"
+          className={`mt-5 flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${
+            active ? "bg-ink text-white" : "bg-linen group-hover:bg-ink group-hover:text-white"
+          }`}
         >
           View suite <ArrowUpRight className="h-4 w-4" />
         </Link>

@@ -19,12 +19,16 @@ const countries = [
 const featured = [
   "Toronto, Ontario, Canada",
   "Vancouver, British Columbia, Canada",
+  "Montreal, Quebec, Canada",
+  "Calgary, Alberta, Canada",
+  "Ottawa, Ontario, Canada",
   "New York City, New York, United States",
+  "Miami, Florida, United States",
   "Los Angeles, California, United States",
   "Kolkata, West Bengal, India",
-  "Mumbai, Maharashtra, India",
   "Delhi, Delhi, India",
   "Bengaluru, Karnataka, India",
+  "Mumbai, Maharashtra, India",
   "Dhaka, Dhaka District, Bangladesh",
   "Chittagong, Chittagong Division, Bangladesh"
 ];

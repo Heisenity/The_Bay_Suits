@@ -21,6 +21,7 @@ export function StaysClient() {
   const searchParams = useSearchParams();
   const [sort, setSort] = useState("recommended");
   const [mobileMapOpen, setMobileMapOpen] = useState(false);
+  const [hoveredPropertyId, setHoveredPropertyId] = useState<string | null>(null);
   const area = searchParams.get("area") || "All locations";
   const selectedLocation = searchParams.get("location") || area;
   const bedrooms = Number(searchParams.get("bedrooms") || 0);
@@ -92,7 +93,15 @@ export function StaysClient() {
           <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(430px,.95fr)]">
             <div className="order-2 xl:order-1">
               <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                {filtered.map((property) => <PropertyCard key={property.id} property={property} />)}
+                {filtered.map((property) => (
+                  <PropertyCard
+                    key={property.id}
+                    property={property}
+                    active={hoveredPropertyId === property.id}
+                    onHoverStart={setHoveredPropertyId}
+                    onHoverEnd={() => setHoveredPropertyId(null)}
+                  />
+                ))}
               </div>
               {!isLoading && filtered.length === 0 && (
                 <div className="rounded-3xl bg-linen p-12 text-center">
@@ -104,7 +113,7 @@ export function StaysClient() {
               )}
             </div>
             <div className={`order-1 xl:sticky xl:top-24 xl:order-2 ${mobileMapOpen ? "block" : "hidden xl:block"}`}>
-              <PropertyMap properties={filtered} />
+              <PropertyMap properties={filtered} activePropertyId={hoveredPropertyId} />
             </div>
           </div>
         </div>

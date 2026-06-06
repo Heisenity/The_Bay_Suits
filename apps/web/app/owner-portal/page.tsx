@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, BarChart3, Building2, CalendarCheck, CircleDollarSign, KeyRound, LogIn, LogOut, MailCheck } from "lucide-react";
+import { AlertCircle, BarChart3, Building2, CalendarCheck, CircleDollarSign, Eye, EyeOff, KeyRound, LogIn, LogOut, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currency } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ type Dashboard = {
 };
 
 const fallback: Dashboard = {
-  properties: 4,
+  properties: 14,
   bookings: 18,
   confirmedRevenue: 28460,
   occupancy: 74,
@@ -50,8 +50,9 @@ async function getDashboard(): Promise<Dashboard> {
 export default function OwnerPortalPage() {
   const [signedIn, setSignedIn] = useState(false);
   const [email, setEmail] = useState(SUPERADMIN_EMAIL);
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(SUPERADMIN_PASSWORD);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const forgotPasswordHint = useMemo(
     () =>
@@ -85,7 +86,10 @@ export default function OwnerPortalPage() {
       window.localStorage.removeItem(SESSION_KEY);
     }
     setSignedIn(false);
-    setPassword("");
+    setEmail(SUPERADMIN_EMAIL);
+    setPassword(SUPERADMIN_PASSWORD);
+    setShowPassword(false);
+    setError("");
   };
 
   if (!signedIn) {
@@ -104,13 +108,23 @@ export default function OwnerPortalPage() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
           />
-          <input
-            className="field mt-3"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
+          <div className="relative mt-3">
+            <input
+              className="field pr-14"
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((value) => !value)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/40 transition hover:text-ink"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
           {error ? (
             <div className="mt-4 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
