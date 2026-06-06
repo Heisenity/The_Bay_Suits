@@ -42,7 +42,7 @@ export function PropertyMap({ properties }: { properties: Property[] }) {
             key={property.id}
             center={[property.latitude, property.longitude]}
             radius={9}
-            pathOptions={{ color: "#0f1f35", fillColor: "#0f1f35", fillOpacity: 1, weight: 2 }}
+            pathOptions={{ color: "#0f1f35", fillColor: "#0f1f35", fillOpacity: 1, weight: 2, className: "property-map-dot" }}
           >
             <Tooltip permanent direction="top" offset={[0, -9]} className="property-price-marker">
               {currency(property.price)}

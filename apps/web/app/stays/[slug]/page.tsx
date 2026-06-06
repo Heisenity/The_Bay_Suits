@@ -1,8 +1,13 @@
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
-import { Bath, BedDouble, Check, MapPin, ShieldCheck, Users } from "lucide-react";
+import { Bath, BedDouble, Check, MapPin, ShieldCheck, Sparkles, Users, Wifi } from "lucide-react";
 import { getProperty } from "@/lib/api";
 import { BookingPanel } from "@/components/booking-panel";
+
+const BookingCalendarPreview = dynamic(
+  () => import("@/components/booking-calendar-preview").then((module) => module.BookingCalendarPreview)
+);
 
 export default async function PropertyPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -38,6 +43,20 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
             <div className="mt-7 grid gap-4 sm:grid-cols-2">
               {property.amenities.map((amenity) => <p key={amenity} className="flex items-center gap-3 text-sm"><Check className="h-4 w-4 text-champagne" /> {amenity}</p>)}
             </div>
+          </div>
+          <BookingCalendarPreview />
+          <div className="grid gap-3 border-t border-ink/10 py-9 sm:grid-cols-3">
+            {[
+              [ShieldCheck, "Secure booking", "Protected reservation flow"],
+              [Sparkles, "Prepared stay", "Cleaned and quality checked"],
+              [Wifi, "Connected", "Wi-Fi and guest support"]
+            ].map(([Icon, title, text]) => (
+              <div key={title as string} className="rounded-2xl border border-ink/10 bg-white p-5">
+                <Icon className="h-5 w-5 text-champagne" />
+                <strong className="mt-4 block text-sm">{title as string}</strong>
+                <p className="mt-1 text-xs leading-5 text-ink/45">{text as string}</p>
+              </div>
+            ))}
           </div>
           <div className="flex gap-4 rounded-2xl bg-linen p-6">
             <ShieldCheck className="h-7 w-7 shrink-0 text-champagne" />

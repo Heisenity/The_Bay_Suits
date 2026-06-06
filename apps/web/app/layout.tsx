@@ -4,7 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { ChatWidget } from "@/components/chat-widget";
+import { LazyChatWidget } from "@/components/lazy-chat-widget";
 import { ScrollProgress } from "@/components/scroll-progress";
 
 export const metadata: Metadata = {
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <SiteHeader />
           <main>{children}</main>
           <SiteFooter />
-          <ChatWidget />
+          <LazyChatWidget />
         </Providers>
       </body>
     </html>

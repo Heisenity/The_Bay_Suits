@@ -33,17 +33,24 @@ function Metric({ value, suffix, label, decimals }: (typeof metrics)[number]) {
   }, [inView, reduceMotion, value]);
 
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="border-t border-ink/15 py-7 md:border-l md:border-t-0 md:px-8 md:py-2 first:md:border-l-0">
-      <strong className="font-display text-5xl md:text-6xl">{shown.toFixed(decimals)}{suffix}</strong>
-      <p className="mt-2 text-[10px] font-bold uppercase tracking-[.14em] text-ink/45">{label}</p>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      className="rounded-[1.5rem] border border-white/10 bg-white/[0.07] p-6 shadow-[inset_0_1px_rgba(255,255,255,.08)] backdrop-blur-xl md:p-8"
+    >
+      <strong className="font-display text-5xl text-white md:text-6xl">{shown.toFixed(decimals)}{suffix}</strong>
+      <p className="mt-2 text-[10px] font-bold uppercase tracking-[.14em] text-white/45">{label}</p>
     </motion.div>
   );
 }
 
 export function ProofStrip() {
   return (
-    <section className="border-y border-ink/10 bg-[#fbfaf7] px-5 py-10 md:px-10 lg:px-16">
-      <div className="container-wide grid md:grid-cols-3">
+    <section className="relative overflow-hidden border-y border-white/10 bg-ink px-5 py-12 md:px-10 lg:px-16">
+      <div className="absolute -left-20 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-champagne/10 blur-[100px]" />
+      <div className="container-wide relative grid gap-4 md:grid-cols-3">
         {metrics.map((metric) => <Metric key={metric.label} {...metric} />)}
       </div>
     </section>

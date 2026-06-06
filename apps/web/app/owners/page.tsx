@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { PageHero } from "@/components/page-hero";
+import { DeferredOwnerExperience } from "@/components/deferred-owner-experience";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,7 @@ export default function OwnersPage() {
           </div>
         </div>
       </section>
+      <DeferredOwnerExperience />
     </>
   );
 }

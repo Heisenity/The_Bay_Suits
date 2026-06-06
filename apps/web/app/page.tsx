@@ -1,4 +1,5 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowRight, BadgeCheck, Building2, KeyRound } from "lucide-react";
 import { HomeHero } from "@/components/home-hero";
 import { MarqueeBand } from "@/components/marquee-band";
@@ -7,9 +8,12 @@ import { ProofStrip } from "@/components/proof-strip";
 import { DistributionNetwork } from "@/components/distribution-network";
 import { Reveal } from "@/components/reveal";
 import { StayStandard } from "@/components/stay-standard";
-import { properties, services, testimonials } from "@/lib/data";
+import { properties, services } from "@/lib/data";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+const FAQAccordion = dynamic(() => import("@/components/faq-accordion").then((module) => module.FAQAccordion));
+const ReviewCards = dynamic(() => import("@/components/review-cards").then((module) => module.ReviewCards));
 
 export default function HomePage() {
   return (
@@ -86,26 +90,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section-pad bg-linen">
-        <div className="container-wide">
-          <Reveal><p className="eyebrow text-center">Guest notes</p></Reveal>
-          <div className="mt-12 grid gap-5 lg:grid-cols-3">
-            {testimonials.map((testimonial, index) => (
-              <Reveal key={testimonial.author} delay={index * 0.08}>
-              <figure className="group h-full rounded-[1.75rem] bg-white p-8 transition duration-500 hover:-translate-y-1 hover:shadow-soft md:p-10">
-                <div className="text-champagne">★★★★★</div>
-                <blockquote className="mt-6 font-display text-2xl leading-9">
-                  “{testimonial.quote}”
-                </blockquote>
-                <figcaption className="mt-8 text-xs font-bold uppercase tracking-[0.12em] text-ink/50">
-                  {testimonial.author} · {testimonial.stay}
-                </figcaption>
-              </figure>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ReviewCards />
+
+      <FAQAccordion />
 
       <section className="relative overflow-hidden bg-champagne px-5 py-28 text-center md:px-10">
         <div className="absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-ink/10" />
