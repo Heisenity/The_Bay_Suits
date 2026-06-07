@@ -39,7 +39,9 @@ export function DistributionNetwork() {
             <Reveal
               key={channel.name}
               delay={index * 0.05}
-              className="group flex min-h-28 items-center justify-center border-b border-r border-ink/10 px-4 transition duration-500 hover:bg-ink sm:min-h-32 lg:border-b-0"
+              className={`group flex min-h-28 items-center justify-center border-b border-r border-ink/10 px-4 transition duration-500 hover:bg-ink sm:min-h-32 lg:border-b-0 ${
+                index === channels.length - 1 ? "col-span-2 sm:col-span-1" : ""
+              }`}
             >
               <span
                 className={`text-center text-xl transition duration-500 group-hover:scale-105 group-hover:text-white md:text-2xl ${channel.className}`}

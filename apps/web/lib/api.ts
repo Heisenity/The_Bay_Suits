@@ -29,7 +29,18 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     }
     throw new Error(message);
   }
-  return response.json() as Promise<T>;
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) {
+    const text = await response.text();
+    return (text ? ({ success: true, raw: text } as T) : ({} as T));
+  }
+
+  try {
+    return (await response.json()) as T;
+  } catch {
+    return {} as T;
+  }
 }
 
 export async function getProperties(): Promise<Property[]> {
