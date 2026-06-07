@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowUpRight, Instagram, Linkedin, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Logo } from "./logo";
 import { buttonVariants } from "./ui/button";
@@ -19,11 +19,26 @@ const links = [
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-[#fbfaf7]/95 backdrop-blur-xl">
-      <div className="container-wide relative flex h-[76px] items-center justify-between gap-4 overflow-hidden px-4 sm:px-5 md:px-10 lg:px-16">
-        <div className="min-w-0 max-w-[calc(100%-3.75rem)] lg:max-w-none">
-          <Logo />
+      <div className="container-wide relative flex h-[76px] items-center justify-between gap-4 px-4 sm:px-5 md:px-10 lg:px-16">
+        <div className="min-w-0 max-w-[calc(100%-9.5rem)] sm:max-w-[calc(100%-10.5rem)] lg:max-w-none">
+          <div className="sm:hidden">
+            <Logo compact />
+          </div>
+          <div className="hidden sm:block">
+            <Logo compact={false} />
+          </div>
         </div>
         <nav className="hidden items-center gap-5 lg:flex">
           {links.map((link) => (
@@ -44,22 +59,63 @@ export function SiteHeader() {
             Book now
           </Link>
         </div>
-        <button className="absolute right-4 p-2 md:right-8 lg:hidden" onClick={() => setOpen((value) => !value)} aria-label="Menu">
+        <div className="absolute right-4 flex items-center gap-2 md:right-8 lg:hidden">
+          <Link
+            href="/stays"
+            className={cn(
+              buttonVariants({ variant: "default", size: "sm" }),
+              "h-9 rounded-full px-3.5 text-[0.64rem] uppercase tracking-[0.12em] sm:h-10 sm:px-4 sm:text-[0.7rem]"
+            )}
+          >
+            Book now
+          </Link>
+          <button className="rounded-full border border-ink/10 p-2.5" onClick={() => setOpen((value) => !value)} aria-label="Menu">
           {open ? <X /> : <Menu />}
-        </button>
+          </button>
+        </div>
       </div>
       <AnimatePresence>
         {open && (
           <motion.nav
-            initial={{ clipPath: "inset(0 0 100% 0)" }}
-            animate={{ clipPath: "inset(0 0 0% 0)" }}
-            exit={{ clipPath: "inset(0 0 100% 0)" }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-0 bottom-0 top-[76px] z-[60] overflow-y-auto bg-ink px-5 py-8 text-white lg:hidden"
+            className="fixed inset-x-0 bottom-0 top-[76px] z-[60] overflow-y-auto bg-ink text-white lg:hidden"
           >
-            <div className="container-wide flex min-h-full flex-col">
-              <p className="eyebrow">Explore The Bay Suites</p>
-              <div className="mt-7 divide-y divide-white/10 border-y border-white/10">
+            <div className="container-wide relative flex min-h-full flex-col px-5 pb-8 pt-6">
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(201,177,124,0.18),transparent_58%)]" />
+              <div className="relative">
+                <p className="eyebrow text-champagne/90">Explore The Bay Suites</p>
+                <p className="mt-3 max-w-[18rem] text-sm leading-6 text-white/68">
+                  Every stay, service and portal action from desktop is available here too, just tuned for mobile.
+                </p>
+              </div>
+              <div className="relative mt-6 grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/portal"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[1.65rem] border border-white/10 bg-white/8 px-5 py-4 backdrop-blur-sm"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-[.16em] text-champagne/90">Current guest</span>
+                  <strong className="mt-2 block font-display text-[1.55rem] leading-none">Guest portal</strong>
+                  <span className="mt-2 inline-flex items-center gap-2 text-sm text-white/70">
+                    Open reservation tools <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </Link>
+                <Link
+                  href="/stays"
+                  onClick={() => setOpen(false)}
+                  className="rounded-[1.65rem] bg-champagne px-5 py-4 text-ink"
+                >
+                  <span className="text-[10px] font-bold uppercase tracking-[.16em] text-ink/55">Ready to stay?</span>
+                  <strong className="mt-2 block font-display text-[1.55rem] leading-none">Book now</strong>
+                  <span className="mt-2 inline-flex items-center gap-2 text-sm text-ink/70">
+                    Browse residences <ArrowUpRight className="h-4 w-4" />
+                  </span>
+                </Link>
+              </div>
+              <div className="relative mt-7 divide-y divide-white/10 rounded-[1.8rem] border border-white/10 bg-white/5 px-4">
                 {links.map((link, index) => (
                   <motion.div
                     key={link.href}
@@ -70,29 +126,33 @@ export function SiteHeader() {
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="group flex items-center justify-between py-4 font-display text-3xl sm:text-4xl"
+                      className="group flex items-center justify-between py-4"
                     >
-                      <span><span className="mr-4 align-middle text-[10px] font-sans text-champagne">0{index + 1}</span>{link.label}</span>
+                      <span className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-champagne/80">0{index + 1}</span>
+                        <span className="font-display text-[1.6rem] capitalize leading-none sm:text-[2rem]">{link.label}</span>
+                      </span>
                       <ArrowUpRight className="h-5 w-5 text-white/30 transition group-hover:text-champagne" />
                     </Link>
                   </motion.div>
                 ))}
               </div>
-              <div className="mt-auto grid gap-4 pt-8 sm:grid-cols-2">
-                <Link href="/portal" onClick={() => setOpen(false)} className="rounded-2xl bg-white p-5 text-ink">
-                  <span className="text-[10px] font-bold uppercase tracking-[.14em] text-ink/40">Current guest</span>
-                  <strong className="mt-2 block font-display text-2xl">Open guest portal</strong>
-                </Link>
-                <Link href="/stays" onClick={() => setOpen(false)} className="rounded-2xl bg-champagne p-5 text-ink">
-                  <span className="text-[10px] font-bold uppercase tracking-[.14em] text-ink/50">Ready to stay?</span>
-                  <strong className="mt-2 block font-display text-2xl">Find a residence</strong>
-                </Link>
-              </div>
-              <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5 text-xs text-white/45">
-                <a href="tel:+18777211311">+1 (877) 721-1311</a>
-                <div className="flex gap-4">
+              <div className="relative mt-auto rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
+                <div className="flex flex-wrap items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-white/58">
+                  <span>Guest support</span>
+                  <span className="h-1 w-1 rounded-full bg-champagne/70" />
+                  <a href="tel:+18777211311" className="transition hover:text-white">
+                    +1 (877) 721-1311
+                  </a>
+                </div>
+                <div className="mt-4 flex items-center justify-between text-sm text-white/48">
+                  <a href="mailto:admin@thebaysuites.com" className="transition hover:text-white">
+                    admin@thebaysuites.com
+                  </a>
+                  <div className="flex gap-4">
                   <a href="https://www.instagram.com/thebaysuites/" aria-label="Instagram"><Instagram className="h-4 w-4" /></a>
                   <a href="https://www.linkedin.com/company/the-bay-suites-to" aria-label="LinkedIn"><Linkedin className="h-4 w-4" /></a>
+                  </div>
                 </div>
               </div>
             </div>

@@ -23,12 +23,18 @@ type BookingNotificationInput = {
 type InvoiceNotificationInput = {
   confirmation: string;
   propertyName: string;
+  propertyLocation: string;
   guestName: string;
   email: string;
   checkIn: string;
   checkOut: string;
   guests: number;
   total: number;
+  lineItems: Array<{
+    label: string;
+    detail?: string;
+    value: string;
+  }>;
 };
 
 type ExtendStayNotificationInput = {
@@ -104,15 +110,17 @@ export class MailService implements OnModuleInit {
   async sendInvoiceNotification(input: InvoiceNotificationInput) {
     const attachment = {
       name: `invoice-${input.confirmation}.pdf`,
-      content: buildInvoicePdfBase64({
+      content: await buildInvoicePdfBase64({
         confirmation: input.confirmation,
         guestName: input.guestName,
         propertyName: input.propertyName,
+        propertyLocation: input.propertyLocation,
         checkIn: input.checkIn,
         checkOut: input.checkOut,
         guests: input.guests,
         total: input.total,
-        issuedAt: new Date().toISOString().slice(0, 10)
+        issuedAt: new Date().toISOString().slice(0, 10),
+        lineItems: input.lineItems
       })
     };
 

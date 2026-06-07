@@ -154,16 +154,45 @@ export class BookingsService {
     if (!booking) throw new NotFoundException("Reservation not found");
     const property = properties.find((item) => item.id === booking.propertyId);
     if (!property) throw new NotFoundException("Property not found");
+    const quote = this.quote({
+      propertyId: booking.propertyId,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      guests: booking.guests
+    });
 
     await this.mail.sendInvoiceNotification({
       confirmation: booking.confirmation,
       propertyName: property.name,
+      propertyLocation: property.location,
       guestName: booking.guestName,
       email: booking.email,
       checkIn: booking.checkIn,
       checkOut: booking.checkOut,
       guests: booking.guests,
-      total: booking.total
+      total: booking.total,
+      lineItems: [
+        {
+          label: "Accommodation",
+          detail: `${quote.nights} night${quote.nights === 1 ? "" : "s"} at CAD ${quote.nightlyRate.toFixed(2)} / night`,
+          value: `CAD ${quote.accommodation.toFixed(2)}`
+        },
+        {
+          label: "Cleaning and turnover",
+          detail: "Professional preparation before arrival",
+          value: `CAD ${quote.cleaningFee.toFixed(2)}`
+        },
+        {
+          label: "Guest services fee",
+          detail: "Support coverage and booking administration",
+          value: `CAD ${quote.serviceFee.toFixed(2)}`
+        },
+        {
+          label: "Taxes",
+          detail: "Applicable sales taxes",
+          value: `CAD ${quote.tax.toFixed(2)}`
+        }
+      ]
     });
 
     return {
