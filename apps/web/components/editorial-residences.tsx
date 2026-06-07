@@ -34,17 +34,17 @@ function ResidencePanel({ property, index }: { property: Property; index: number
           <span>{String(index + 1).padStart(2, "0")} / 03</span>
         </div>
 
-        <div className="relative flex-1 py-7 sm:py-8 lg:py-12">
-          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-champagne sm:text-xs sm:tracking-[0.18em]">
+        <div className="relative flex-1 py-6 text-center sm:py-7 lg:py-12 lg:text-left">
+          <p className="flex items-center justify-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-champagne sm:text-xs sm:tracking-[0.18em] lg:justify-start">
             <MapPin className="h-3.5 w-3.5" /> {property.location}
           </p>
-          <h3 className="mt-4 max-w-[11.5rem] font-display text-[3.35rem] leading-[0.9] tracking-[-0.045em] sm:mt-5 sm:max-w-[13rem] sm:text-[3.9rem] lg:mt-6 lg:max-w-xl lg:text-5xl xl:text-7xl">
+          <h3 className="mx-auto mt-4 max-w-[15rem] text-balance font-display text-[2.95rem] leading-[0.92] tracking-[-0.04em] sm:mt-5 sm:max-w-[17rem] sm:text-[3.35rem] lg:mx-0 lg:mt-6 lg:max-w-xl lg:text-5xl xl:text-7xl">
             {property.name}
           </h3>
-          <p className="mt-4 max-w-[18rem] text-sm leading-6 text-white/55 sm:mt-5 sm:max-w-[22rem] sm:leading-7 lg:mt-6 lg:max-w-lg">{property.shortDescription}</p>
+          <p className="mx-auto mt-4 max-w-[18rem] text-sm leading-6 text-white/55 sm:mt-5 sm:max-w-[22rem] sm:leading-7 lg:mx-0 lg:mt-6 lg:max-w-lg">{property.shortDescription}</p>
         </div>
 
-        <div className="relative pb-10 sm:pb-11 lg:pb-0">
+        <div className="relative pb-12 sm:pb-11 lg:pb-0">
           <div className="grid grid-cols-2 gap-x-4 gap-y-3 border-y border-white/12 py-4 text-[11px] text-white/55 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-4 sm:py-5 sm:text-xs">
             <span className="flex items-center gap-2"><BedDouble className="h-4 w-4 text-champagne" /> {property.bedrooms} bed</span>
             <span className="flex items-center gap-2"><Users className="h-4 w-4 text-champagne" /> {property.guests} guests</span>
