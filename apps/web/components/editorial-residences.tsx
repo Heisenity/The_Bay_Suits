@@ -10,8 +10,8 @@ import { currency } from "@/lib/utils";
 
 function ResidencePanel({ property, index }: { property: Property; index: number }) {
   return (
-    <article className="grid min-h-[calc(100vh-76px)] w-screen shrink-0 bg-ink text-white lg:grid-cols-[56%_44%]">
-      <Link href={`/stays/${property.slug}`} className="group relative min-h-[48vh] overflow-hidden lg:min-h-full">
+    <article className="grid min-h-[calc(100svh-76px)] w-screen shrink-0 grid-rows-[46svh_minmax(0,1fr)] bg-ink text-white lg:min-h-[calc(100vh-76px)] lg:grid-cols-[56%_44%] lg:grid-rows-1">
+      <Link href={`/stays/${property.slug}`} className="group relative min-h-[46svh] overflow-hidden lg:min-h-full">
         <Image
           src={property.images[0]}
           alt={property.name}
@@ -20,32 +20,32 @@ function ResidencePanel({ property, index }: { property: Property; index: number
           className="object-cover transition duration-[1.2s] ease-out group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent" />
-        <span className="absolute bottom-6 left-6 grid h-20 w-20 place-items-center rounded-full border border-white/35 bg-ink/15 text-[9px] font-bold uppercase tracking-[0.14em] backdrop-blur-md transition duration-500 group-hover:scale-110 group-hover:bg-champagne group-hover:text-ink lg:left-auto lg:right-6">
+        <span className="absolute bottom-5 left-5 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-white/35 bg-ink/15 px-2 text-[9px] font-bold uppercase tracking-[0.14em] backdrop-blur-md transition duration-500 group-hover:scale-110 group-hover:bg-champagne group-hover:text-ink sm:h-20 sm:w-20 lg:left-auto lg:right-6">
           Explore
         </span>
       </Link>
 
-      <div className="relative flex flex-col justify-between overflow-hidden px-6 py-10 sm:px-10 lg:px-14 lg:py-14">
-        <span className="absolute -right-8 -top-16 font-display text-[15rem] leading-none text-white/[0.035]">
+      <div className="relative flex min-h-0 flex-col justify-between overflow-hidden px-5 py-7 sm:px-8 sm:py-9 lg:px-14 lg:py-14">
+        <span className="absolute -right-3 top-4 font-display text-[10rem] leading-none text-white/[0.03] sm:text-[12rem] lg:-right-8 lg:-top-16 lg:text-[15rem] lg:text-white/[0.035]">
           {String(index + 1).padStart(2, "0")}
         </span>
-        <div className="relative flex items-center justify-between border-b border-white/12 pb-5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+        <div className="relative flex items-center justify-between border-b border-white/12 pb-4 text-[9px] font-bold uppercase tracking-[0.18em] text-white/45 sm:text-[10px] sm:tracking-[0.2em] lg:pb-5">
           <span>Selected residence</span>
           <span>{String(index + 1).padStart(2, "0")} / 03</span>
         </div>
 
-        <div className="relative py-12">
-          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-champagne">
+        <div className="relative flex-1 py-7 sm:py-8 lg:py-12">
+          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-champagne sm:text-xs sm:tracking-[0.18em]">
             <MapPin className="h-3.5 w-3.5" /> {property.location}
           </p>
-          <h3 className="mt-6 max-w-xl font-display text-5xl leading-[0.92] tracking-[-0.035em] sm:text-6xl xl:text-7xl">
+          <h3 className="mt-4 max-w-[11.5rem] font-display text-[3.35rem] leading-[0.9] tracking-[-0.045em] sm:mt-5 sm:max-w-[13rem] sm:text-[3.9rem] lg:mt-6 lg:max-w-xl lg:text-5xl xl:text-7xl">
             {property.name}
           </h3>
-          <p className="mt-6 max-w-lg text-sm leading-7 text-white/55">{property.shortDescription}</p>
+          <p className="mt-4 max-w-[18rem] text-sm leading-6 text-white/55 sm:mt-5 sm:max-w-[22rem] sm:leading-7 lg:mt-6 lg:max-w-lg">{property.shortDescription}</p>
         </div>
 
-        <div className="relative">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-4 border-y border-white/12 py-5 text-xs text-white/55 sm:grid-cols-4">
+        <div className="relative pb-10 sm:pb-11 lg:pb-0">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3 border-y border-white/12 py-4 text-[11px] text-white/55 sm:grid-cols-4 sm:gap-x-6 sm:gap-y-4 sm:py-5 sm:text-xs">
             <span className="flex items-center gap-2"><BedDouble className="h-4 w-4 text-champagne" /> {property.bedrooms} bed</span>
             <span className="flex items-center gap-2"><Users className="h-4 w-4 text-champagne" /> {property.guests} guests</span>
             <span className="flex items-center gap-2"><Star className="h-4 w-4 fill-champagne text-champagne" /> {property.rating}</span>
@@ -53,7 +53,7 @@ function ResidencePanel({ property, index }: { property: Property; index: number
           </div>
           <Link
             href={`/stays/${property.slug}`}
-            className="group mt-7 inline-flex items-center gap-3 text-sm font-bold"
+            className="group mt-5 inline-flex items-center gap-3 text-sm font-bold sm:mt-6 lg:mt-7"
           >
             View residence
             <span className="grid h-10 w-10 place-items-center rounded-full border border-white/20 transition group-hover:border-champagne group-hover:bg-champagne group-hover:text-ink">
@@ -118,9 +118,6 @@ export function EditorialResidences({ properties }: { properties: Property[] }) 
             <div className="absolute inset-x-0 bottom-0 z-10 h-1 bg-white/10">
               <motion.div style={{ scaleX: mobileScaleX, transformOrigin: "left" }} className="h-full bg-champagne" />
             </div>
-            <p className="absolute bottom-5 left-6 z-10 text-[9px] font-bold uppercase tracking-[0.18em] text-white/45">
-              Scroll to explore
-            </p>
           </div>
         </section>
       )}

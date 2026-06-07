@@ -50,7 +50,7 @@ export function HomeHero() {
           transition={{ duration: 0.65, delay: 0.15 }}
           className="flex items-center gap-3"
         >
-          <span className="h-px w-10 bg-champagne" />
+          <span className="hidden h-px w-10 bg-champagne md:block" />
           <p className="eyebrow">Elevated stays, wherever life takes you</p>
         </motion.div>
 
