@@ -429,29 +429,29 @@ export default function OwnerPortalPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="rounded-[1.5rem] border border-ink/10 bg-white p-4 sm:p-5">
+            <div className="min-w-0 space-y-4">
+              <div className="min-w-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white p-4 sm:p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink/40">Mark slot as booked</p>
-                <h3 className="mt-2 font-display text-2xl">Create a manual hold</h3>
-                <div className="mt-5 grid gap-4">
-                  <label>
+                <h3 className="mt-2 font-display text-[2rem] leading-[0.95] sm:text-2xl">Create a manual hold</h3>
+                <div className="mt-5 grid min-w-0 gap-4">
+                  <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Check in</span>
-                    <input className="field" type="date" value={blockCheckIn} onChange={(event) => setBlockCheckIn(event.target.value)} />
+                    <input className="field min-w-0 max-w-full" type="date" value={blockCheckIn} onChange={(event) => setBlockCheckIn(event.target.value)} />
                   </label>
-                  <label>
+                  <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Check out</span>
-                    <input className="field" type="date" min={blockCheckIn || undefined} value={blockCheckOut} onChange={(event) => setBlockCheckOut(event.target.value)} />
+                    <input className="field min-w-0 max-w-full" type="date" min={blockCheckIn || undefined} value={blockCheckOut} onChange={(event) => setBlockCheckOut(event.target.value)} />
                   </label>
-                  <label>
+                  <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Reason or note</span>
                     <textarea
-                      className="field h-24 resize-none py-3"
+                      className="field min-w-0 max-w-full h-24 resize-none py-3 text-sm leading-6 placeholder:text-xs sm:placeholder:text-sm"
                       value={blockNote}
                       onChange={(event) => setBlockNote(event.target.value)}
                       placeholder="Owner stay, maintenance, offline hold, VIP reservation..."
                     />
                   </label>
-                  <Button onClick={submitBlock} disabled={createBlock.isPending} className="rounded-xl">
+                  <Button onClick={submitBlock} disabled={createBlock.isPending} className="w-full rounded-xl">
                     {createBlock.isPending ? "Saving block…" : "Block these dates"}
                   </Button>
                 </div>

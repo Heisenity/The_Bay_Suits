@@ -33,7 +33,7 @@ export default function HomePage() {
         <div className="container-wide">
           <Reveal className="text-center">
             <p className="eyebrow">One team, every stay</p>
-            <h2 className="mx-auto mt-4 max-w-3xl font-display text-5xl leading-none md:text-7xl">
+            <h2 className="mx-auto mt-4 max-w-3xl font-display text-[3.3rem] leading-[0.92] tracking-[-0.03em] sm:text-5xl md:text-7xl">
               Hospitality for guests. Performance for owners.
             </h2>
           </Reveal>
