@@ -22,27 +22,13 @@ export class BookingsService {
   quote(input: QuoteDto) {
     const property = properties.find((item) => item.id === input.propertyId);
     if (!property) throw new NotFoundException("Property not found");
-    const start = new Date(`${input.checkIn}T12:00:00Z`);
-    const end = new Date(`${input.checkOut}T12:00:00Z`);
-    const nights = Math.round((end.getTime() - start.getTime()) / 86400000);
-    if (!Number.isFinite(nights) || nights < 1) throw new BadRequestException("Check-out must be after check-in");
-    if (input.guests > property.guests) throw new BadRequestException("Guest count exceeds property capacity");
+    const charges = this.calculateCharges(property, input.checkIn, input.checkOut, input.guests);
     if (this.database.hasOverlap(input.propertyId, input.checkIn, input.checkOut)) {
       throw new ConflictException("Those dates are already unavailable. Please choose another stay window.");
     }
-    const accommodation = nights * property.price;
-    const cleaningFee = property.bedrooms > 2 ? 135 : 95;
-    const serviceFee = Math.round(accommodation * 0.08);
-    const tax = Math.round((accommodation + cleaningFee + serviceFee) * 0.13);
     return {
       propertyId: input.propertyId,
-      nights,
-      nightlyRate: property.price,
-      accommodation,
-      cleaningFee,
-      serviceFee,
-      tax,
-      total: accommodation + cleaningFee + serviceFee + tax
+      ...charges
     };
   }
 
@@ -145,7 +131,7 @@ export class BookingsService {
 
   conversation(confirmation: string) {
     const booking = this.database.findBookingByConfirmation(confirmation);
-    if (!booking) throw new NotFoundException("Reservation not found");
+    if (!booking) return [];
     return this.database.listMessages(`booking:${booking.confirmation}`);
   }
 
@@ -154,12 +140,7 @@ export class BookingsService {
     if (!booking) throw new NotFoundException("Reservation not found");
     const property = properties.find((item) => item.id === booking.propertyId);
     if (!property) throw new NotFoundException("Property not found");
-    const quote = this.quote({
-      propertyId: booking.propertyId,
-      checkIn: booking.checkIn,
-      checkOut: booking.checkOut,
-      guests: booking.guests
-    });
+    const quote = this.calculateCharges(property, booking.checkIn, booking.checkOut, booking.guests);
 
     await this.mail.sendInvoiceNotification({
       confirmation: booking.confirmation,
@@ -355,5 +336,33 @@ export class BookingsService {
     if (!/^(0[1-9]|1[0-2])\s*\/\s*\d{2,4}$/.test(cardExpiry)) {
       throw new BadRequestException("Enter an expiry date like 12 / 30");
     }
+  }
+
+  private calculateCharges(
+    property: (typeof properties)[number],
+    checkIn: string,
+    checkOut: string,
+    guests: number
+  ) {
+    const start = new Date(`${checkIn}T12:00:00Z`);
+    const end = new Date(`${checkOut}T12:00:00Z`);
+    const nights = Math.round((end.getTime() - start.getTime()) / 86400000);
+    if (!Number.isFinite(nights) || nights < 1) throw new BadRequestException("Check-out must be after check-in");
+    if (guests > property.guests) throw new BadRequestException("Guest count exceeds property capacity");
+
+    const accommodation = nights * property.price;
+    const cleaningFee = property.bedrooms > 2 ? 135 : 95;
+    const serviceFee = Math.round(accommodation * 0.08);
+    const tax = Math.round((accommodation + cleaningFee + serviceFee) * 0.13);
+
+    return {
+      nights,
+      nightlyRate: property.price,
+      accommodation,
+      cleaningFee,
+      serviceFee,
+      tax,
+      total: accommodation + cleaningFee + serviceFee + tax
+    };
   }
 }

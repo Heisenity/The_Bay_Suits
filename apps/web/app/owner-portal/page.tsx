@@ -78,7 +78,13 @@ async function getDashboard(): Promise<Dashboard> {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/dashboard`);
     if (!response.ok) throw new Error("Dashboard unavailable");
     const data = await response.json();
-    return data.bookings ? data : fallback;
+    return {
+      properties: typeof data.properties === "number" ? data.properties : fallback.properties,
+      bookings: typeof data.bookings === "number" ? data.bookings : 0,
+      confirmedRevenue: typeof data.confirmedRevenue === "number" ? data.confirmedRevenue : 0,
+      occupancy: typeof data.occupancy === "number" ? data.occupancy : 0,
+      recentBookings: Array.isArray(data.recentBookings) ? data.recentBookings : []
+    };
   } catch {
     return fallback;
   }
@@ -292,8 +298,8 @@ export default function OwnerPortalPage() {
   }
 
   return (
-    <section className="section-pad bg-linen">
-      <div className="container-wide">
+    <section className="overflow-x-hidden bg-linen px-3 py-10 sm:px-5 sm:py-20 md:px-10 md:py-28 lg:px-16">
+      <div className="container-wide min-w-0">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Admin dashboard</p>
@@ -323,7 +329,7 @@ export default function OwnerPortalPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[1.75rem] bg-white p-6 shadow-sm md:p-8">
+        <div className="mt-6 rounded-[1.75rem] bg-white p-4 shadow-sm sm:p-6 md:p-8">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="flex items-center gap-3">
@@ -356,7 +362,7 @@ export default function OwnerPortalPage() {
             </div>
           ) : null}
 
-          <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_380px]">
+          <div className="mt-6 grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1.1fr)_380px]">
             <div className="rounded-[1.5rem] border border-ink/10 bg-linen/50 p-4 sm:p-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -424,7 +430,7 @@ export default function OwnerPortalPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="rounded-[1.5rem] border border-ink/10 bg-white p-5">
+              <div className="rounded-[1.5rem] border border-ink/10 bg-white p-4 sm:p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink/40">Mark slot as booked</p>
                 <h3 className="mt-2 font-display text-2xl">Create a manual hold</h3>
                 <div className="mt-5 grid gap-4">
@@ -451,7 +457,7 @@ export default function OwnerPortalPage() {
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-ink/10 bg-linen/50 p-5">
+              <div className="rounded-[1.5rem] border border-ink/10 bg-linen/50 p-4 sm:p-5">
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink/40">Current manual blocks</p>
                 <div className="mt-4 space-y-3">
                   {blocks.length ? (
@@ -484,7 +490,7 @@ export default function OwnerPortalPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-[1.75rem] bg-white p-6 shadow-sm md:p-8">
+        <div className="mt-6 overflow-x-hidden rounded-[1.75rem] bg-white p-4 shadow-sm sm:p-6 md:p-8">
           <div className="flex items-center gap-3">
             <MessageSquareText className="h-5 w-5 text-champagne" />
             <div>

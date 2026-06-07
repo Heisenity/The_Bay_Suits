@@ -134,8 +134,8 @@ export default function PortalPage() {
   }
 
   return (
-    <section className="section-pad bg-linen">
-      <div className="container-wide">
+    <section className="overflow-x-hidden bg-linen px-3 py-10 sm:px-5 sm:py-20 md:px-10 md:py-28 lg:px-16">
+      <div className="container-wide min-w-0">
         <p className="eyebrow">Welcome back</p>
         <div className="mt-4 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -197,14 +197,14 @@ export default function PortalPage() {
         </div>
 
         {portalError ? (
-          <div className="mt-6 rounded-2xl border border-ink/10 bg-white px-5 py-4 text-sm text-ink/70 shadow-sm">
+          <div className="mt-6 rounded-2xl border border-ink/10 bg-white px-4 py-4 text-sm leading-7 text-ink/70 shadow-sm sm:px-5">
             {portalError}
           </div>
         ) : null}
 
         <div className="mt-8">
           {activePanel === "arrival" ? (
-            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-6 shadow-sm md:p-8">
+            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6 md:p-8">
               <div className="flex items-center gap-3">
                 <CalendarDays className="h-5 w-5 text-champagne" />
                 <div>
@@ -268,26 +268,26 @@ export default function PortalPage() {
           ) : null}
 
           {activePanel === "invoice" ? (
-            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-6 shadow-sm md:p-8">
+            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6 md:p-8">
               <h3 className="font-display text-3xl">Receipt & invoice</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/55">
+              <p className="mt-3 max-w-2xl break-words text-sm leading-7 text-ink/55">
                 Send the latest invoice PDF to {reservationData.email}. We’ll email the booking summary immediately to the same address used during reservation.
               </p>
-              <div className="mt-6 flex flex-wrap items-center gap-4">
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                 <Button
                   onClick={() => invoice.mutate()}
                   disabled={invoice.isPending}
-                  className="rounded-xl px-6 py-4"
+                  className="w-full rounded-xl px-6 py-4 sm:w-auto"
                 >
                   {invoice.isPending ? "Sending invoice…" : "Email invoice PDF"}
                 </Button>
-                <p className="text-sm text-ink/45">Total paid: {currency(reservationData.total)}</p>
+                <p className="text-sm text-ink/45 sm:ml-auto">Total paid: {currency(reservationData.total)}</p>
               </div>
             </div>
           ) : null}
 
           {activePanel === "extend" ? (
-            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-6 shadow-sm md:p-8">
+            <div className="rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm sm:p-6 md:p-8">
               <h3 className="font-display text-3xl">Extend your stay</h3>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-ink/55">
                 If the next nights are still open, we’ll update your checkout and send a refreshed confirmation right away.

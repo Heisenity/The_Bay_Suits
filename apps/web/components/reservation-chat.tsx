@@ -27,9 +27,10 @@ export function ReservationChat({
   const [draft, setDraft] = useState("");
   const [partnerTyping, setPartnerTyping] = useState(false);
   const socket = useRef<Socket | null>(null);
-  const endRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
   const joinedConversation = useRef("");
   const typingTimeout = useRef<number | null>(null);
+  const previousMessageCount = useRef(0);
   const quickReplies = currentAuthor === "guest"
     ? ["What time is check-in?", "Can I extend my stay?", "Please share arrival help"]
     : ["Thanks, we are on it.", "Your arrival guide is ready.", "I can help with that now."];
@@ -102,7 +103,14 @@ export function ReservationChat({
   }, [conversationId]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!listRef.current) return;
+    const behavior =
+      loading || previousMessageCount.current === 0 || messages.length <= previousMessageCount.current ? "auto" : "smooth";
+    listRef.current.scrollTo({
+      top: listRef.current.scrollHeight,
+      behavior
+    });
+    previousMessageCount.current = messages.length;
   }, [messages, loading]);
 
   function sendMessage(text: string) {
@@ -170,7 +178,10 @@ export function ReservationChat({
         </div>
       </div>
 
-      <div className="max-h-[420px] min-h-[280px] space-y-3 overflow-y-auto bg-[linear-gradient(180deg,rgba(251,250,247,0.65),rgba(243,238,230,0.9))] p-5">
+      <div
+        ref={listRef}
+        className="max-h-[420px] min-h-[280px] space-y-3 overflow-y-auto overflow-x-hidden bg-[linear-gradient(180deg,rgba(251,250,247,0.65),rgba(243,238,230,0.9))] p-5"
+      >
         {loading ? (
           <div className="grid min-h-[240px] place-items-center text-sm text-ink/45">Loading conversation…</div>
         ) : error ? (
@@ -223,7 +234,6 @@ export function ReservationChat({
             <div className="rounded-full bg-white px-3 py-2 shadow-sm">Someone is typing…</div>
           </div>
         ) : null}
-        <div ref={endRef} />
       </div>
 
       <form onSubmit={submit} className="flex gap-2 border-t border-ink/8 p-3">
