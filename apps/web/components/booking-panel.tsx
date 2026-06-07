@@ -43,23 +43,23 @@ export function BookingPanel({ property }: { property: Property }) {
   }
 
   return (
-    <form onSubmit={submit} className="rounded-[1.75rem] border border-ink/10 bg-white p-6 shadow-soft">
-      <div className="flex items-end justify-between">
+    <form onSubmit={submit} className="rounded-[1.75rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <p><strong className="text-2xl">{currency(property.price)}</strong> <span className="text-sm text-ink/50">night</span></p>
         <p className="flex items-center gap-1 text-xs font-bold"><Star className="h-3.5 w-3.5 fill-champagne text-champagne" /> {property.rating} · {property.reviews} reviews</p>
       </div>
       <div className="mt-6 grid grid-cols-2 overflow-hidden rounded-xl border border-ink/15">
         <label className="border-r border-ink/15 p-3">
           <span className="block text-[9px] font-bold uppercase tracking-[.14em]">Check in</span>
-          <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="mt-1 w-full bg-transparent text-xs outline-none" required />
+          <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="mt-1 w-full bg-transparent text-sm outline-none" required />
         </label>
         <label className="p-3">
           <span className="block text-[9px] font-bold uppercase tracking-[.14em]">Check out</span>
-          <input type="date" min={checkIn} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="mt-1 w-full bg-transparent text-xs outline-none" required />
+          <input type="date" min={checkIn} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="mt-1 w-full bg-transparent text-sm outline-none" required />
         </label>
         <label className="col-span-2 border-t border-ink/15 p-3">
           <span className="block text-[9px] font-bold uppercase tracking-[.14em]">Guests</span>
-          <select value={guests} onChange={(e) => setGuests(e.target.value)} className="mt-1 w-full bg-transparent text-xs outline-none">
+          <select value={guests} onChange={(e) => setGuests(e.target.value)} className="mt-1 w-full bg-transparent text-sm outline-none">
             {Array.from({ length: property.guests }, (_, i) => i + 1).map((count) => <option key={count}>{count}</option>)}
           </select>
         </label>

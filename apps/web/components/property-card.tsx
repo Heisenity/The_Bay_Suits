@@ -54,21 +54,21 @@ export function PropertyCard({ property, active = false, onHoverStart, onHoverEn
       </Link>
       <div className="p-6">
         <div className="flex items-start justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs text-ink/50">
-              <MapPin className="h-3.5 w-3.5 text-champagne" /> {property.location}
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-champagne" /> <span className="truncate">{property.location}</span>
             </p>
-            <h3 className="mt-2 font-display text-3xl font-semibold">{property.name}</h3>
+            <h3 className="mt-2 line-clamp-2 font-display text-[1.9rem] font-semibold leading-tight sm:text-3xl">{property.name}</h3>
           </div>
           <span className="flex items-center gap-1 text-xs font-bold">
             <Star className="h-3.5 w-3.5 fill-champagne text-champagne" /> {property.rating}
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-ink/55">{property.shortDescription}</p>
-        <div className="mt-5 flex items-center gap-5 border-t border-ink/10 pt-5 text-xs text-ink/60">
+        <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-ink/10 pt-5 text-xs text-ink/60 sm:gap-5">
           <span className="flex items-center gap-1.5"><BedDouble className="h-4 w-4" /> {property.bedrooms} bed</span>
           <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> {property.guests} guests</span>
-          <span className="ml-auto">
+          <span className="basis-full pt-1 sm:ml-auto sm:basis-auto sm:pt-0">
             <strong className="text-base text-ink">{currency(property.price)}</strong> / night
           </span>
         </div>

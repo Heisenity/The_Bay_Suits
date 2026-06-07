@@ -139,7 +139,7 @@ export function SearchBox({
   return (
     <form
       onSubmit={submit}
-      className={`relative z-[70] grid min-w-0 grid-cols-2 gap-1.5 overflow-visible rounded-[1.6rem] bg-white p-3 text-ink shadow-soft sm:gap-2 ${
+      className={`relative z-[70] grid min-w-0 grid-cols-2 gap-1.5 overflow-visible rounded-[1.35rem] bg-white p-2.5 text-ink shadow-soft sm:gap-2 sm:rounded-[1.6rem] sm:p-3 ${
         compact
           ? "lg:grid-cols-[1.2fr_.8fr_.8fr_.75fr_.95fr_auto]"
           : "lg:grid-cols-[1.2fr_.8fr_.8fr_.75fr_.95fr_auto]"
@@ -178,7 +178,7 @@ export function SearchBox({
         </div>
       </div>
 
-      <label className="relative col-span-2 flex min-w-0 items-center gap-3 rounded-2xl px-3 py-1.5 hover:bg-linen sm:py-2 lg:col-span-1">
+      <label className="relative col-span-2 flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2 hover:bg-linen lg:col-span-1">
         <MapPin className="h-4 w-4 shrink-0 text-champagne" />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-ink/45">Where</span>
@@ -197,7 +197,7 @@ export function SearchBox({
         </span>
         {cityLoading && <LoaderCircle className="h-4 w-4 animate-spin text-ink/35" />}
         {cityPickerOpen && (
-          <div className="absolute left-0 top-[calc(100%+12px)] z-[1000] w-[min(520px,calc(100vw-40px))] overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-soft">
+          <div className="absolute left-0 right-0 top-[calc(100%+12px)] z-[1000] overflow-hidden rounded-[1.5rem] border border-ink/10 bg-white shadow-soft sm:right-auto sm:w-[min(520px,calc(100vw-40px))]">
             <div className="border-b border-ink/8 px-4 py-3">
               <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-ink/40">
                 {where.trim() ? "Matching cities" : "Popular cities"}
@@ -271,7 +271,7 @@ export function SearchBox({
         )}
       </label>
 
-      <label className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-1.5 hover:bg-linen sm:py-2">
+      <label className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2 hover:bg-linen">
         <CalendarDays className="h-4 w-4 shrink-0 text-champagne" />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-ink/45">Check in</span>
@@ -279,7 +279,7 @@ export function SearchBox({
         </span>
       </label>
 
-      <label className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-1.5 hover:bg-linen sm:py-2">
+      <label className="flex min-w-0 items-center gap-3 overflow-hidden rounded-2xl px-3 py-2 hover:bg-linen">
         <CalendarDays className="h-4 w-4 shrink-0 text-champagne" />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-ink/45">Check out</span>
@@ -287,7 +287,7 @@ export function SearchBox({
         </span>
       </label>
 
-      <label className="flex min-w-0 items-center gap-3 rounded-2xl px-3 py-1.5 hover:bg-linen sm:py-2">
+      <label className="flex min-w-0 items-center gap-3 rounded-2xl px-3 py-2 hover:bg-linen">
         <BedDouble className="h-4 w-4 shrink-0 text-champagne" />
         <span className="min-w-0 flex-1">
           <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-ink/45">Bedrooms</span>
@@ -305,7 +305,7 @@ export function SearchBox({
         <button
           type="button"
           onClick={() => setGuestPickerOpen((open) => !open)}
-          className="flex h-full min-h-12 w-full min-w-0 items-center gap-3 rounded-2xl px-3 py-1.5 text-left hover:bg-linen sm:min-h-14 sm:py-2"
+          className="flex h-full min-h-12 w-full min-w-0 items-center gap-3 rounded-2xl px-3 py-2 text-left hover:bg-linen sm:min-h-14"
         >
           <Users className="h-4 w-4 shrink-0 text-champagne" />
           <span className="min-w-0 flex-1">
@@ -315,7 +315,7 @@ export function SearchBox({
           <ChevronDown className="h-3.5 w-3.5 text-ink/35" />
         </button>
         {guestPickerOpen && (
-          <div className="absolute right-0 top-[calc(100%+12px)] z-[1000] w-[min(360px,calc(100vw-40px))] rounded-2xl border border-ink/10 bg-white p-5 shadow-soft">
+          <div className="absolute left-0 right-0 top-[calc(100%+12px)] z-[1000] rounded-2xl border border-ink/10 bg-white p-4 shadow-soft sm:left-auto sm:w-[min(360px,calc(100vw-40px))] sm:p-5">
             {guestRows.map((row) => (
               <div key={row.key} className="flex items-center justify-between border-b border-ink/8 py-3 last:border-0">
                 <div>

@@ -49,7 +49,7 @@ export function StaysClient() {
 
   return (
     <>
-      <div className="container-wide -mt-8 px-5 md:px-10 lg:px-16">
+      <div className="container-wide -mt-6 px-5 md:-mt-8 md:px-10 lg:px-16">
         <SearchBox
           compact
           initialLocation={selectedLocation}
@@ -92,7 +92,7 @@ export function StaysClient() {
 
           <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(430px,.95fr)]">
             <div className="order-2 xl:order-1">
-              <div className="grid gap-7 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                 {filtered.map((property) => (
                   <PropertyCard
                     key={property.id}

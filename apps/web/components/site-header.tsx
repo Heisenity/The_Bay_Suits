@@ -21,8 +21,10 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   return (
     <header className="sticky top-0 z-50 border-b border-ink/10 bg-[#fbfaf7]/95 backdrop-blur-xl">
-      <div className="container-wide relative flex h-[76px] items-center justify-between px-5 md:px-10 lg:px-16">
-        <Logo />
+      <div className="container-wide relative flex h-[76px] items-center justify-between gap-4 overflow-hidden px-4 sm:px-5 md:px-10 lg:px-16">
+        <div className="min-w-0 max-w-[calc(100%-3.75rem)] lg:max-w-none">
+          <Logo />
+        </div>
         <nav className="hidden items-center gap-5 lg:flex">
           {links.map((link) => (
             <Link

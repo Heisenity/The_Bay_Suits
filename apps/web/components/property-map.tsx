@@ -42,15 +42,15 @@ export function PropertyMap({ properties, activePropertyId }: { properties: Prop
   const activeProperty = properties.find((property) => property.id === activePropertyId);
 
   return (
-    <div className="relative h-full min-h-[360px] overflow-hidden rounded-[1.75rem] border border-ink/10 bg-[#e6e2d9] sm:min-h-[460px] xl:min-h-[720px]">
-      <div className="absolute left-4 top-4 z-[600] rounded-full border border-white/70 bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.14em] text-ink/70 shadow-[0_12px_30px_rgba(15,31,53,.12)] backdrop-blur-sm">
+    <div className="relative h-full min-h-[320px] overflow-hidden rounded-[1.75rem] border border-ink/10 bg-[#e6e2d9] sm:min-h-[460px] xl:min-h-[720px]">
+      <div className="pointer-events-none absolute left-3 right-3 top-3 z-[600] rounded-2xl border border-white/70 bg-white/90 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-ink/70 shadow-[0_12px_30px_rgba(15,31,53,.12)] backdrop-blur-sm sm:left-4 sm:right-auto sm:rounded-full sm:px-4 sm:text-[11px]">
         {activeProperty ? `Spotlight: ${activeProperty.location}` : "Hover a residence to spotlight its map pin"}
       </div>
       <MapContainer
         center={[43.6532, -79.3832]}
         zoom={11}
         scrollWheelZoom
-        className="h-full min-h-[360px] w-full sm:min-h-[460px] xl:min-h-[720px]"
+        className="h-full min-h-[320px] w-full sm:min-h-[460px] xl:min-h-[720px]"
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'

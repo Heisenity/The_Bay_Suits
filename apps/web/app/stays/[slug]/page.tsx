@@ -19,15 +19,15 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
       <section className="container-wide px-5 pb-10 pt-10 md:px-10 lg:px-16">
         <p className="flex items-center gap-2 text-xs text-ink/50"><MapPin className="h-3.5 w-3.5 text-champagne" /> {property.location}</p>
         <h1 className="mt-3 font-display text-5xl leading-none md:text-7xl">{property.name}</h1>
-        <div className="mt-7 grid h-[560px] gap-2 overflow-hidden rounded-[1.75rem] md:grid-cols-2">
-          <div className="relative"><Image src={property.images[0]} alt={property.name} fill priority className="object-cover" /></div>
-          <div className="grid gap-2 md:grid-rows-2">
-            <div className="relative"><Image src={property.images[1]} alt="" fill className="object-cover" /></div>
-            <div className="relative"><Image src={property.images[2]} alt="" fill className="object-cover" /></div>
+        <div className="mt-7 grid gap-2 overflow-hidden rounded-[1.75rem] md:grid-cols-2">
+          <div className="relative aspect-[4/3] md:min-h-[560px] md:aspect-auto"><Image src={property.images[0]} alt={property.name} fill priority className="object-cover" /></div>
+          <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1 md:grid-rows-2">
+            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={property.images[1]} alt="" fill className="object-cover" /></div>
+            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={property.images[2]} alt="" fill className="object-cover" /></div>
           </div>
         </div>
       </section>
-      <section className="container-wide grid gap-14 px-5 pb-24 md:px-10 lg:grid-cols-[1fr_380px] lg:px-16">
+      <section className="container-wide grid gap-10 px-5 pb-24 md:px-10 lg:grid-cols-[1fr_380px] lg:gap-14 lg:px-16">
         <div>
           <div className="flex flex-wrap gap-6 border-b border-ink/10 pb-8 text-sm">
             <span className="flex items-center gap-2"><Users className="h-4 w-4" /> {property.guests} guests</span>
@@ -58,7 +58,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               </div>
             ))}
           </div>
-          <div className="flex gap-4 rounded-2xl bg-linen p-6">
+          <div className="flex flex-col gap-4 rounded-2xl bg-linen p-6 sm:flex-row">
             <ShieldCheck className="h-7 w-7 shrink-0 text-champagne" />
             <div><h3 className="font-bold">The Bay Suites promise</h3><p className="mt-2 text-sm leading-6 text-ink/55">Professionally cleaned, quality inspected and backed by responsive guest support throughout your stay.</p></div>
           </div>

@@ -147,8 +147,8 @@ function ScrollWorkflow({ reduceMotion }: { reduceMotion: boolean }) {
   }
 
   return (
-    <section ref={section} className="relative h-[360vh] bg-ink text-white">
-      <div className="sticky top-[76px] flex h-[calc(100vh-76px)] items-center overflow-hidden px-5 py-8 md:px-10 lg:px-16">
+    <section ref={section} className="relative h-[280vh] bg-ink text-white md:h-[360vh]">
+      <div className="sticky top-[76px] flex h-[calc(100svh-76px)] items-center overflow-hidden px-5 py-8 md:px-10 lg:px-16">
         <WorkflowContent activeStep={activeStep} markerLeft={markerLeft} lineScale={lineScale} reduceMotion={false} />
       </div>
     </section>
@@ -383,9 +383,9 @@ export function OwnerExperience() {
           </div>
         </div>
 
-        <div className="sticky bottom-5 z-30 mx-auto mt-16 flex max-w-xl items-center justify-between gap-4 rounded-full border border-white/60 bg-white/85 p-2 pl-5 shadow-soft backdrop-blur-xl">
-          <span className="hidden text-xs font-semibold text-ink/60 sm:block">See what your property could earn.</span>
-          <Link href="/property-assessment" className={cn(buttonVariants({ size: "sm" }), "shrink-0")}>
+        <div className="sticky bottom-4 z-30 mx-auto mt-16 flex max-w-xl flex-col gap-3 rounded-[1.75rem] border border-white/60 bg-white/85 p-3 shadow-soft backdrop-blur-xl sm:bottom-5 sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:p-2 sm:pl-5">
+          <span className="text-center text-xs font-semibold text-ink/60 sm:text-left">See what your property could earn.</span>
+          <Link href="/property-assessment" className={cn(buttonVariants({ size: "sm" }), "w-full shrink-0 sm:w-auto")}>
             Free assessment <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
