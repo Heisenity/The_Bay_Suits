@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { Bath, BedDouble, Check, MapPin, ShieldCheck, Sparkles, Users, Wifi } from "lucide-react";
 import { getProperty } from "@/lib/api";
+import { getPropertyGallery } from "@/lib/property";
 import { BookingPanel } from "@/components/booking-panel";
 
 const BookingCalendarPreview = dynamic(
@@ -13,6 +14,8 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const property = await getProperty(slug);
   if (!property) notFound();
+  const gallery = getPropertyGallery(property);
+  const amenities = property.amenities.length ? property.amenities : ["Fast Wi-Fi", "Full kitchen", "Responsive guest support"];
 
   return (
     <>
@@ -20,10 +23,10 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
         <p className="flex items-center gap-2 text-xs text-ink/50"><MapPin className="h-3.5 w-3.5 text-champagne" /> {property.location}</p>
         <h1 className="mt-3 font-display text-5xl leading-none md:text-7xl">{property.name}</h1>
         <div className="mt-7 grid gap-2 overflow-hidden rounded-[1.75rem] md:grid-cols-2">
-          <div className="relative aspect-[4/3] md:min-h-[560px] md:aspect-auto"><Image src={property.images[0]} alt={property.name} fill priority className="object-cover" /></div>
+          <div className="relative aspect-[4/3] md:min-h-[560px] md:aspect-auto"><Image src={gallery[0]} alt={property.name} fill priority className="object-cover" /></div>
           <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-1 md:grid-rows-2">
-            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={property.images[1]} alt="" fill className="object-cover" /></div>
-            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={property.images[2]} alt="" fill className="object-cover" /></div>
+            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={gallery[1]} alt="" fill className="object-cover" /></div>
+            <div className="relative aspect-[4/3] md:aspect-auto"><Image src={gallery[2]} alt="" fill className="object-cover" /></div>
           </div>
         </div>
       </section>
@@ -41,7 +44,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
           <div className="border-t border-ink/10 py-9">
             <h2 className="font-display text-4xl">What this place offers</h2>
             <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              {property.amenities.map((amenity) => <p key={amenity} className="flex items-center gap-3 text-sm"><Check className="h-4 w-4 text-champagne" /> {amenity}</p>)}
+              {amenities.map((amenity) => <p key={amenity} className="flex items-center gap-3 text-sm"><Check className="h-4 w-4 text-champagne" /> {amenity}</p>)}
             </div>
           </div>
           <BookingCalendarPreview propertyId={property.id} />

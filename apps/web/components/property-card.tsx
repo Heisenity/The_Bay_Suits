@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, BedDouble, MapPin, Star, Users } from "lucide-react";
+import { getPropertyGallery } from "@/lib/property";
 import type { Property } from "@/lib/types";
 import { currency } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ type PropertyCardProps = {
 };
 
 export function PropertyCard({ property, active = false, onHoverStart, onHoverEnd }: PropertyCardProps) {
+  const [heroImage] = getPropertyGallery(property);
   return (
     <motion.article
       onMouseEnter={() => onHoverStart?.(property.id)}
@@ -36,7 +38,7 @@ export function PropertyCard({ property, active = false, onHoverStart, onHoverEn
           className="absolute inset-0"
         >
           <Image
-            src={property.images[0]}
+            src={heroImage}
             alt={property.name}
             fill
             className="object-cover transition duration-700 group-hover:scale-105"

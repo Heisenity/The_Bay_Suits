@@ -5,15 +5,17 @@ import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, BedDouble, MapPin, Star, Users } from "lucide-react";
 import { useRef } from "react";
+import { getPropertyGallery } from "@/lib/property";
 import type { Property } from "@/lib/types";
 import { currency } from "@/lib/utils";
 
 function ResidencePanel({ property, index }: { property: Property; index: number }) {
+  const [heroImage] = getPropertyGallery(property);
   return (
     <article className="grid min-h-[calc(100svh-76px)] w-screen shrink-0 grid-rows-[46svh_minmax(0,1fr)] bg-ink text-white lg:min-h-[calc(100vh-76px)] lg:grid-cols-[56%_44%] lg:grid-rows-1">
       <Link href={`/stays/${property.slug}`} className="group relative min-h-[46svh] overflow-hidden lg:min-h-full">
         <Image
-          src={property.images[0]}
+          src={heroImage}
           alt={property.name}
           fill
           sizes="(min-width: 1024px) 56vw, 100vw"

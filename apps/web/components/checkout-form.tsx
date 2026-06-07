@@ -7,10 +7,12 @@ import { FormEvent, useState } from "react";
 import { LockKeyhole, ShieldCheck } from "lucide-react";
 import type { Property } from "@/lib/types";
 import { createBooking, getQuote } from "@/lib/api";
+import { getPropertyGallery } from "@/lib/property";
 import { currency } from "@/lib/utils";
 import { Button } from "./ui/button";
 
 export function CheckoutForm({ property }: { property: Property }) {
+  const [heroImage] = getPropertyGallery(property);
   const params = useSearchParams();
   const router = useRouter();
   const checkIn = params.get("checkIn") || new Date().toISOString().slice(0, 10);
@@ -83,7 +85,7 @@ export function CheckoutForm({ property }: { property: Property }) {
         <div className="sticky top-28 rounded-3xl border border-ink/10 bg-white p-6 shadow-soft">
           <div className="flex gap-4 border-b border-ink/10 pb-6">
             <div className="relative h-24 w-28 shrink-0 overflow-hidden rounded-xl">
-              <Image src={property.images[0]} alt={property.name} fill className="object-cover" />
+              <Image src={heroImage} alt={property.name} fill className="object-cover" />
             </div>
             <div><p className="text-xs text-ink/45">{property.location}</p><h3 className="mt-1 font-display text-2xl font-semibold">{property.name}</h3><p className="mt-2 text-xs">★ {property.rating}</p></div>
           </div>

@@ -1,4 +1,5 @@
 import { properties } from "./data";
+import { normalizeProperties, normalizeProperty } from "./property";
 import type {
   Booking,
   BookingQuote,
@@ -45,17 +46,20 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
 export async function getProperties(): Promise<Property[]> {
   try {
-    return await request<Property[]>("/properties", { signal: AbortSignal.timeout(1800) });
+    const payload = await request<unknown>("/properties", { signal: AbortSignal.timeout(1800) });
+    const normalized = normalizeProperties(payload);
+    return normalized.length ? normalized : normalizeProperties(properties);
   } catch {
-    return properties;
+    return normalizeProperties(properties);
   }
 }
 
 export async function getProperty(slug: string): Promise<Property | undefined> {
   try {
-    return await request<Property>(`/properties/${slug}`);
+    const payload = await request<unknown>(`/properties/${slug}`);
+    return normalizeProperty(payload) || normalizeProperties(properties).find((property) => property.slug === slug);
   } catch {
-    return properties.find((property) => property.slug === slug);
+    return normalizeProperties(properties).find((property) => property.slug === slug);
   }
 }
 
