@@ -405,7 +405,7 @@ export default function OwnerPortalPage() {
                       key={day}
                       className={`grid aspect-square place-items-center rounded-xl text-xs font-semibold ${
                         isBlocked
-                          ? "bg-champagne/30 text-ink ring-1 ring-champagne/50"
+                          ? "blocked-day border border-champagne/45 bg-champagne/18 text-ink/60"
                           : isReserved
                             ? "bg-ink/10 text-ink/45"
                             : "bg-white text-ink"

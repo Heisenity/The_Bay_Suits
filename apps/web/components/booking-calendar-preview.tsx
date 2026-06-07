@@ -27,6 +27,7 @@ export function BookingCalendarPreview({ propertyId }: { propertyId: string }) {
   const days = useMemo(() => Array.from({ length: data?.daysInMonth || 0 }, (_, index) => index + 1), [data]);
   const blanks = useMemo(() => Array.from({ length: data?.startsOn || 0 }, (_, index) => index), [data]);
   const reservedDays = new Set(data?.reservedDays || []);
+  const blockedDays = new Set(data?.blockedDays || []);
 
   return (
     <section className="border-t border-ink/10 py-9">
@@ -75,6 +76,7 @@ export function BookingCalendarPreview({ propertyId }: { propertyId: string }) {
               ))
             : days.map((day, index) => {
                 const reserved = reservedDays.has(day);
+                const blocked = blockedDays.has(day);
                 return (
                   <motion.span
                     key={day}
@@ -83,7 +85,11 @@ export function BookingCalendarPreview({ propertyId }: { propertyId: string }) {
                     viewport={{ once: true }}
                     transition={{ delay: reduceMotion ? 0 : index * 0.01 }}
                     className={`grid aspect-square place-items-center rounded-lg text-xs ${
-                      reserved ? "bg-ink/7 text-ink/30 line-through" : "bg-linen text-ink"
+                      blocked
+                        ? "blocked-day border border-champagne/45 bg-champagne/18 text-ink/55"
+                        : reserved
+                          ? "bg-ink/7 text-ink/30 line-through"
+                          : "bg-linen text-ink"
                     }`}
                   >
                     {day}
@@ -94,6 +100,7 @@ export function BookingCalendarPreview({ propertyId }: { propertyId: string }) {
         <div className="mt-4 flex flex-wrap gap-5 text-[10px] text-ink/45">
           <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-linen ring-1 ring-ink/10" /> Available</span>
           <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-ink/15" /> Reserved</span>
+          <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full bg-champagne/60" /> Manually blocked</span>
         </div>
       </div>
     </section>

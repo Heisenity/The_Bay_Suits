@@ -192,6 +192,33 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   animation-play-state: paused;
 }
 
+.blocked-day {
+  position: relative;
+  overflow: hidden;
+}
+
+.blocked-day::before,
+.blocked-day::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 1.5px;
+  border-radius: 999px;
+  background: rgba(15, 31, 53, 0.38);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.blocked-day::before {
+  transform: translateY(-50%) rotate(33deg);
+}
+
+.blocked-day::after {
+  transform: translateY(-50%) rotate(-33deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
