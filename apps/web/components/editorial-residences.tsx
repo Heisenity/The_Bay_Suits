@@ -67,11 +67,15 @@ function ResidencePanel({ property, index }: { property: Property; index: number
 }
 
 export function EditorialResidences({ properties }: { properties: Property[] }) {
-  const target = useRef<HTMLElement | null>(null);
+  const desktopTarget = useRef<HTMLElement | null>(null);
+  const mobileTarget = useRef<HTMLElement | null>(null);
   const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({ target, offset: ["start start", "end end"] });
-  const x = useTransform(scrollYProgress, [0, 1], ["0%", reduceMotion ? "0%" : "-66.666%"]);
-  const scaleX = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const { scrollYProgress: desktopProgress } = useScroll({ target: desktopTarget, offset: ["start start", "end end"] });
+  const { scrollYProgress: mobileProgress } = useScroll({ target: mobileTarget, offset: ["start start", "end end"] });
+  const desktopX = useTransform(desktopProgress, [0, 1], ["0%", reduceMotion ? "0%" : "-66.666%"]);
+  const mobileX = useTransform(mobileProgress, [0, 1], ["0%", reduceMotion ? "0%" : "-66.666%"]);
+  const desktopScaleX = useTransform(desktopProgress, [0, 1], [0, 1]);
+  const mobileScaleX = useTransform(mobileProgress, [0, 1], [0, 1]);
   const featured = properties.slice(0, 3);
 
   return (
@@ -97,22 +101,40 @@ export function EditorialResidences({ properties }: { properties: Property[] }) 
         </div>
       </div>
 
-      <div className={reduceMotion ? "" : "lg:hidden"}>
+      <div className={reduceMotion ? "" : "hidden"}>
         {featured.map((property, index) => (
           <ResidencePanel key={property.id} property={property} index={index} />
         ))}
       </div>
 
       {!reduceMotion && (
-        <section ref={target} className="relative hidden h-[300vh] lg:block" aria-label="Featured residences">
-          <div className="sticky top-[76px] h-[calc(100vh-76px)] overflow-hidden">
-            <motion.div style={{ x }} className="flex w-[300vw]">
+        <section ref={mobileTarget} className="relative h-[300vh] lg:hidden" aria-label="Featured residences">
+          <div className="sticky top-[76px] h-[calc(100svh-76px)] overflow-hidden">
+            <motion.div style={{ x: mobileX }} className="flex w-[300vw]">
               {featured.map((property, index) => (
                 <ResidencePanel key={property.id} property={property} index={index} />
               ))}
             </motion.div>
             <div className="absolute inset-x-0 bottom-0 z-10 h-1 bg-white/10">
-              <motion.div style={{ scaleX, transformOrigin: "left" }} className="h-full bg-champagne" />
+              <motion.div style={{ scaleX: mobileScaleX, transformOrigin: "left" }} className="h-full bg-champagne" />
+            </div>
+            <p className="absolute bottom-5 left-6 z-10 text-[9px] font-bold uppercase tracking-[0.18em] text-white/45">
+              Scroll to explore
+            </p>
+          </div>
+        </section>
+      )}
+
+      {!reduceMotion && (
+        <section ref={desktopTarget} className="relative hidden h-[300vh] lg:block" aria-label="Featured residences">
+          <div className="sticky top-[76px] h-[calc(100vh-76px)] overflow-hidden">
+            <motion.div style={{ x: desktopX }} className="flex w-[300vw]">
+              {featured.map((property, index) => (
+                <ResidencePanel key={property.id} property={property} index={index} />
+              ))}
+            </motion.div>
+            <div className="absolute inset-x-0 bottom-0 z-10 h-1 bg-white/10">
+              <motion.div style={{ scaleX: desktopScaleX, transformOrigin: "left" }} className="h-full bg-champagne" />
             </div>
             <p className="absolute bottom-5 left-6 z-10 text-[9px] font-bold uppercase tracking-[0.18em] text-white/45">
               Scroll to explore
