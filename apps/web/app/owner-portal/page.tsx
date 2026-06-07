@@ -436,16 +436,16 @@ export default function OwnerPortalPage() {
                 <div className="mt-5 grid min-w-0 gap-4">
                   <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Check in</span>
-                    <input className="field min-w-0 max-w-full" type="date" value={blockCheckIn} onChange={(event) => setBlockCheckIn(event.target.value)} />
+                    <input className="field admin-date-field min-w-0 max-w-full" type="date" value={blockCheckIn} onChange={(event) => setBlockCheckIn(event.target.value)} />
                   </label>
                   <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Check out</span>
-                    <input className="field min-w-0 max-w-full" type="date" min={blockCheckIn || undefined} value={blockCheckOut} onChange={(event) => setBlockCheckOut(event.target.value)} />
+                    <input className="field admin-date-field min-w-0 max-w-full" type="date" min={blockCheckIn || undefined} value={blockCheckOut} onChange={(event) => setBlockCheckOut(event.target.value)} />
                   </label>
                   <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Reason or note</span>
                     <textarea
-                      className="field min-w-0 max-w-full h-24 resize-none py-3 text-sm leading-6 placeholder:text-xs sm:placeholder:text-sm"
+                      className="field admin-note-field min-w-0 max-w-full h-24 resize-none py-3 text-sm leading-6"
                       value={blockNote}
                       onChange={(event) => setBlockNote(event.target.value)}
                       placeholder="Owner stay, maintenance, offline hold, VIP reservation..."

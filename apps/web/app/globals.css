@@ -178,6 +178,43 @@ select.field {
   max-width: 100%;
 }
 
+.admin-date-field {
+  @apply text-[0.95rem] leading-none;
+}
+
+.admin-date-field::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.admin-date-field::-webkit-datetime-edit {
+  font-size: 0.95rem;
+  line-height: 1.1;
+  padding: 0;
+}
+
+.admin-date-field::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+.admin-note-field::placeholder {
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 640px) {
+  .admin-date-field {
+    font-size: 0.875rem;
+  }
+
+  .admin-date-field::-webkit-datetime-edit {
+    font-size: 0.875rem;
+  }
+
+  .admin-note-field::placeholder {
+    font-size: 0.875rem;
+  }
+}
+
 .grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
 }
