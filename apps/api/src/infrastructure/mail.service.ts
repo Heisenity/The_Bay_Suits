@@ -1,5 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { BrevoClient } from "@getbrevo/brevo";
+import { buildInvoicePdfBase64 } from "./invoice-pdf";
 
 type LeadNotificationInput = {
   kind: string;
@@ -17,6 +18,26 @@ type BookingNotificationInput = {
   guests: number;
   total: number;
   notes?: string;
+};
+
+type InvoiceNotificationInput = {
+  confirmation: string;
+  propertyName: string;
+  guestName: string;
+  email: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  total: number;
+};
+
+type ExtendStayNotificationInput = {
+  confirmation: string;
+  propertyName: string;
+  guestName: string;
+  email: string;
+  checkOut: string;
+  total: number;
 };
 
 @Injectable()
@@ -80,18 +101,88 @@ export class MailService implements OnModuleInit {
     await Promise.allSettled([adminPromise, guestPromise]);
   }
 
+  async sendInvoiceNotification(input: InvoiceNotificationInput) {
+    const attachment = {
+      name: `invoice-${input.confirmation}.pdf`,
+      content: buildInvoicePdfBase64({
+        confirmation: input.confirmation,
+        guestName: input.guestName,
+        propertyName: input.propertyName,
+        checkIn: input.checkIn,
+        checkOut: input.checkOut,
+        guests: input.guests,
+        total: input.total,
+        issuedAt: new Date().toISOString().slice(0, 10)
+      })
+    };
+
+    await this.send({
+      to: input.email,
+      subject: `Your Bay Suites invoice (${input.confirmation})`,
+      text: [
+        `Hello ${input.guestName},`,
+        "",
+        "Your booking invoice is attached as a PDF.",
+        `Property: ${input.propertyName}`,
+        `Check-in: ${input.checkIn}`,
+        `Check-out: ${input.checkOut}`,
+        `Guests: ${input.guests}`,
+        `Total: CAD ${input.total.toFixed(2)}`
+      ].join("\n"),
+      html: this.wrapHtml(
+        "Your invoice is ready.",
+        this.bookingDetailsHtml(
+          {
+            ...input,
+            phone: undefined,
+            notes: undefined
+          },
+          false
+        )
+      ),
+      attachments: [attachment]
+    });
+  }
+
+  async sendExtendStayNotification(input: ExtendStayNotificationInput) {
+    await this.send({
+      to: input.email,
+      subject: `Your Bay Suites stay has been extended (${input.confirmation})`,
+      text: [
+        `Hello ${input.guestName},`,
+        "",
+        "Your reservation has been updated successfully.",
+        `Property: ${input.propertyName}`,
+        `New check-out: ${input.checkOut}`,
+        `Updated total: CAD ${input.total.toFixed(2)}`
+      ].join("\n"),
+      html: this.wrapHtml(
+        "Your stay has been extended.",
+        `<p style="margin:0 0 18px;color:#4b5563;font-size:14px">Your updated reservation details are below.</p>${this.simpleRowsHtml([
+          ["Confirmation", input.confirmation],
+          ["Property", input.propertyName],
+          ["Guest", input.guestName],
+          ["New check-out", input.checkOut],
+          ["Updated total", `CAD ${input.total.toFixed(2)}`]
+        ])}`
+      )
+    });
+  }
+
   private async send({
     to,
     subject,
     text,
     html,
-    replyTo
+    replyTo,
+    attachments
   }: {
     to: string;
     subject: string;
     text: string;
     html: string;
     replyTo?: string;
+    attachments?: Array<{ name: string; content: string }>;
   }) {
     if (!this.ready || !this.client || !this.fromAddress) {
       this.logger.warn(`Email skipped for "${subject}" because the mailer is not configured.`);
@@ -109,7 +200,8 @@ export class MailService implements OnModuleInit {
           email: senderEmail
         },
         to: [{ email: to }],
-        replyTo: replyTo ? { email: replyTo } : undefined
+        replyTo: replyTo ? { email: replyTo } : undefined,
+        attachment: attachments
       });
     } catch (error) {
       this.logger.error(`Email delivery failed for "${subject}": ${String(error)}`);
@@ -178,6 +270,10 @@ export class MailService implements OnModuleInit {
       rows.push(["Notes", input.notes || "None"]);
     }
 
+    return this.simpleRowsHtml(rows);
+  }
+
+  private simpleRowsHtml(rows: Array<[string, string]>) {
     return `<table style="width:100%;border-collapse:collapse">${rows
       .map(
         ([label, value]) =>

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { BookingsService } from "./bookings.service";
-import { CreateBookingDto, QuoteDto } from "./bookings.dto";
+import { CreateBookingDto, ExtendStayDto, QuoteDto } from "./bookings.dto";
 
 @Controller("bookings")
 export class BookingsController {
@@ -16,6 +16,11 @@ export class BookingsController {
     return this.bookings.create(input);
   }
 
+  @Get("calendar/:propertyId")
+  monthAvailability(@Param("propertyId") propertyId: string, @Query("month") month: string) {
+    return this.bookings.monthAvailability(propertyId, month);
+  }
+
   @Get("availability/:propertyId")
   availability(
     @Param("propertyId") propertyId: string,
@@ -23,5 +28,25 @@ export class BookingsController {
     @Query("checkOut") checkOut: string
   ) {
     return this.bookings.availability(propertyId, checkIn, checkOut);
+  }
+
+  @Get(":confirmation/messages")
+  messages(@Param("confirmation") confirmation: string) {
+    return this.bookings.conversation(confirmation);
+  }
+
+  @Post(":confirmation/invoice")
+  invoice(@Param("confirmation") confirmation: string) {
+    return this.bookings.sendInvoice(confirmation);
+  }
+
+  @Post(":confirmation/extend")
+  extend(@Param("confirmation") confirmation: string, @Body() input: ExtendStayDto) {
+    return this.bookings.extendStay(confirmation, input.checkOut);
+  }
+
+  @Get(":confirmation")
+  reservation(@Param("confirmation") confirmation: string) {
+    return this.bookings.reservation(confirmation);
   }
 }

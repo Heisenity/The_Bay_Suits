@@ -19,7 +19,13 @@ export class AppController {
       bookings: bookings.length,
       confirmedRevenue: bookings.reduce((sum, booking) => sum + booking.total, 0),
       occupancy: bookings.length ? 74 : 0,
-      recentBookings: bookings.slice(-8).reverse()
+      recentBookings: bookings
+        .slice(-8)
+        .reverse()
+        .map((booking) => ({
+          ...booking,
+          propertyName: properties.find((property) => property.id === booking.propertyId)?.name || "The Bay Suites Residence"
+        }))
     };
   }
 }

@@ -20,7 +20,7 @@ export default async function SuccessPage({ searchParams }: { searchParams: Prom
           <strong className="mt-1 block text-xl tracking-[.08em]">{confirmation}</strong>
         </div>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/portal" className={cn(buttonVariants({ size: "lg" }))}><MessageCircle className="h-4 w-4" /> Open guest portal</Link>
+          <Link href={`/portal?confirmation=${confirmation}`} className={cn(buttonVariants({ size: "lg" }))}><MessageCircle className="h-4 w-4" /> Open guest portal</Link>
           <Link href="/" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>Back to home</Link>
         </div>
       </div>

@@ -2,7 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, BarChart3, Building2, CalendarCheck, CircleDollarSign, Eye, EyeOff, KeyRound, LogIn, LogOut, MailCheck } from "lucide-react";
+import { AlertCircle, BarChart3, Building2, CalendarCheck, CircleDollarSign, Eye, EyeOff, KeyRound, LogIn, LogOut, MailCheck, MessageSquareText } from "lucide-react";
+import { ReservationChat } from "@/components/reservation-chat";
 import { Button } from "@/components/ui/button";
 import { currency } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ type Dashboard = {
   occupancy: number;
   recentBookings: Array<{
     confirmation: string;
+    propertyName?: string;
     guestName: string;
     checkIn: string;
     checkOut: string;
@@ -27,8 +29,8 @@ const fallback: Dashboard = {
   confirmedRevenue: 28460,
   occupancy: 74,
   recentBookings: [
-    { confirmation: "TBS-81AD2F", guestName: "Amelia Roberts", checkIn: "2026-06-18", checkOut: "2026-06-24", total: 1642, status: "confirmed" },
-    { confirmation: "TBS-44C913", guestName: "Marcus Tan", checkIn: "2026-06-21", checkOut: "2026-07-19", total: 6320, status: "confirmed" }
+    { confirmation: "TBS-81AD2F", propertyName: "King West Skyline Suite", guestName: "Amelia Roberts", checkIn: "2026-06-18", checkOut: "2026-06-24", total: 1642, status: "confirmed" },
+    { confirmation: "TBS-44C913", propertyName: "Yorkville Designer Residence", guestName: "Marcus Tan", checkIn: "2026-06-21", checkOut: "2026-07-19", total: 6320, status: "confirmed" }
   ]
 };
 
@@ -54,6 +56,7 @@ export default function OwnerPortalPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useState<string>("");
   const forgotPasswordHint = useMemo(
     () =>
       `For the current demo, sign in with ${SUPERADMIN_EMAIL}. If the admin password is forgotten, contact support and use the temporary access key while backend recovery is still being built.`,
@@ -66,6 +69,11 @@ export default function OwnerPortalPage() {
   }, []);
 
   const { data = fallback } = useQuery({ queryKey: ["owner-dashboard"], queryFn: getDashboard, enabled: signedIn });
+
+  useEffect(() => {
+    if (!data.recentBookings.length) return;
+    setSelectedConversation((current) => current || data.recentBookings[0].confirmation);
+  }, [data.recentBookings]);
 
   const handleSignIn = () => {
     const normalizedEmail = email.trim().toLowerCase();
@@ -198,6 +206,57 @@ export default function OwnerPortalPage() {
               <tbody>{data.recentBookings.map((booking) => <tr key={booking.confirmation} className="border-t border-ink/5"><td className="px-8 py-5 font-bold">{booking.confirmation}</td><td className="px-6 py-5">{booking.guestName}</td><td className="px-6 py-5 text-ink/55">{booking.checkIn} → {booking.checkOut}</td><td className="px-6 py-5 font-bold">{currency(booking.total)}</td><td className="px-8 py-5"><span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">{booking.status}</span></td></tr>)}</tbody>
             </table>
           </div>
+        </div>
+
+        <div className="mt-6 rounded-[1.75rem] bg-white p-6 shadow-sm md:p-8">
+          <div className="flex items-center gap-3">
+            <MessageSquareText className="h-5 w-5 text-champagne" />
+            <div>
+              <h2 className="font-display text-3xl">Guest messaging</h2>
+              <p className="mt-1 text-sm text-ink/45">Realtime conversation linked directly to each guest reservation.</p>
+            </div>
+          </div>
+
+          {data.recentBookings.length ? (
+            <div className="mt-6 grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+              <div className="grid gap-3">
+                {data.recentBookings.map((booking) => (
+                  <button
+                    key={booking.confirmation}
+                    type="button"
+                    onClick={() => setSelectedConversation(booking.confirmation)}
+                    className={`rounded-2xl border px-4 py-4 text-left transition ${
+                      selectedConversation === booking.confirmation
+                        ? "border-[#1d63dc] bg-[#1d63dc]/5"
+                        : "border-ink/10 bg-linen/50 hover:border-ink/20 hover:bg-linen"
+                    }`}
+                  >
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-ink/40">{booking.confirmation}</p>
+                    <strong className="mt-2 block text-sm text-ink">{booking.guestName}</strong>
+                    <p className="mt-1 text-xs text-ink/50">{booking.propertyName || "The Bay Suites Residence"}</p>
+                    <p className="mt-2 text-xs text-ink/45">{booking.checkIn} → {booking.checkOut}</p>
+                  </button>
+                ))}
+              </div>
+
+              {selectedConversation ? (
+                <ReservationChat
+                  confirmation={selectedConversation}
+                  conversationId={`booking:${selectedConversation}`}
+                  currentAuthor="admin"
+                  emptyState="When a guest sends a portal message, it appears here instantly so your team can reply in real time."
+                />
+              ) : (
+                <div className="rounded-[1.75rem] border border-ink/10 bg-linen/50 p-8 text-sm text-ink/55">
+                  Select a reservation to open its realtime guest conversation.
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-6 rounded-2xl border border-dashed border-ink/10 bg-linen/50 p-8 text-center text-sm text-ink/55">
+              No guest conversations yet. Once a reservation messages the host from the guest portal, the thread will appear here.
+            </div>
+          )}
         </div>
       </div>
     </section>

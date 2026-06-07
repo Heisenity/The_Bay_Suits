@@ -18,13 +18,21 @@ export type BookingRecord = {
   createdAt: string;
 };
 
+type MessageRecord = {
+  id: string;
+  conversationId: string;
+  author: string;
+  text: string;
+  createdAt: string;
+};
+
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DatabaseService.name);
   private pool?: Pool;
   private bookings: BookingRecord[] = [];
   private leads: Array<Record<string, unknown>> = [];
-  private messages: Array<Record<string, unknown>> = [];
+  private messages: MessageRecord[] = [];
 
   async onModuleInit() {
     if (!process.env.DATABASE_URL) {
@@ -41,6 +49,12 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
          created_at::text as "createdAt" from bookings`
       );
       this.bookings = result.rows;
+      const messageResult = await this.pool.query<MessageRecord>(
+        `select id, conversation_id as "conversationId", author, body as text, created_at::text as "createdAt"
+         from messages
+         order by created_at asc`
+      );
+      this.messages = messageResult.rows;
       this.logger.log("Connected to PostgreSQL.");
     } catch (error) {
       this.logger.error(`PostgreSQL unavailable; using in-memory persistence. ${String(error)}`);
@@ -100,9 +114,24 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.bookings;
   }
 
+  findBookingByConfirmation(confirmation: string) {
+    return this.bookings.find((booking) => booking.confirmation.toUpperCase() === confirmation.toUpperCase());
+  }
+
   hasOverlap(propertyId: string, checkIn: string, checkOut: string) {
     return this.bookings.some(
       (booking) =>
+        booking.propertyId === propertyId &&
+        booking.status !== "cancelled" &&
+        checkIn < booking.checkOut &&
+        checkOut > booking.checkIn
+    );
+  }
+
+  hasOverlapExcludingBooking(propertyId: string, checkIn: string, checkOut: string, bookingId: string) {
+    return this.bookings.some(
+      (booking) =>
+        booking.id !== bookingId &&
         booking.propertyId === propertyId &&
         booking.status !== "cancelled" &&
         checkIn < booking.checkOut &&
@@ -132,10 +161,26 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   }
 
   async createMessage(payload: { id?: string; conversationId: string; author: string; text: string; createdAt?: string }) {
-    const message = { ...payload, id: payload.id || randomUUID(), createdAt: payload.createdAt || new Date().toISOString() };
+    const message: MessageRecord = { ...payload, id: payload.id || randomUUID(), createdAt: payload.createdAt || new Date().toISOString() };
     if (this.pool) await this.pool.query("insert into messages (id, conversation_id, author, body, created_at) values ($1,$2,$3,$4,$5)", [message.id, message.conversationId, message.author, message.text, message.createdAt]);
     this.messages.push(message);
     return message;
+  }
+
+  listMessages(conversationId: string) {
+    return this.messages
+      .filter((message) => message.conversationId === conversationId)
+      .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+  }
+
+  async extendBooking(bookingId: string, nextCheckOut: string, nextTotal: number) {
+    if (this.pool) {
+      await this.pool.query("update bookings set check_out = $1, total = $2 where id = $3", [nextCheckOut, nextTotal, bookingId]);
+    }
+    this.bookings = this.bookings.map((booking) =>
+      booking.id === bookingId ? { ...booking, checkOut: nextCheckOut, total: nextTotal } : booking
+    );
+    return this.bookings.find((booking) => booking.id === bookingId)!;
   }
 
   async createWebhook(provider: string, externalId: string | undefined, payload: Record<string, unknown>) {

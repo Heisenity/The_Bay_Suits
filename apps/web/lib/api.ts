@@ -1,5 +1,5 @@
 import { properties } from "./data";
-import type { Booking, BookingQuote, Property } from "./types";
+import type { Booking, BookingQuote, BookingReservation, ChatMessage, Property, PropertyMonthAvailability } from "./types";
 import { nightsBetween } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -76,6 +76,42 @@ export async function createBooking(payload: Record<string, unknown>): Promise<B
     method: "POST",
     body: JSON.stringify(payload)
   });
+}
+
+export async function getBookingReservation(confirmation: string): Promise<BookingReservation> {
+  return request<BookingReservation>(`/bookings/${encodeURIComponent(confirmation)}`);
+}
+
+export async function getReservationMessages(confirmation: string): Promise<ChatMessage[]> {
+  return request<ChatMessage[]>(`/bookings/${encodeURIComponent(confirmation)}/messages`);
+}
+
+export async function sendReservationInvoice(confirmation: string) {
+  return request<{ success: boolean; message: string }>(`/bookings/${encodeURIComponent(confirmation)}/invoice`, {
+    method: "POST"
+  });
+}
+
+export async function extendReservationStay(confirmation: string, checkOut: string) {
+  return request<{ confirmation: string; checkOut: string; total: number; addedNights: number }>(
+    `/bookings/${encodeURIComponent(confirmation)}/extend`,
+    {
+      method: "POST",
+      body: JSON.stringify({ checkOut })
+    }
+  );
+}
+
+export async function getPropertyMonthAvailability(propertyId: string, month: string): Promise<PropertyMonthAvailability> {
+  return request<PropertyMonthAvailability>(
+    `/bookings/calendar/${encodeURIComponent(propertyId)}?month=${encodeURIComponent(month)}`
+  );
+}
+
+export async function getBookingAvailability(propertyId: string, checkIn: string, checkOut: string) {
+  return request<{ propertyId: string; checkIn: string; checkOut: string; available: boolean }>(
+    `/bookings/availability/${encodeURIComponent(propertyId)}?checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`
+  );
 }
 
 export async function submitLead(path: "contacts" | "assessments", payload: Record<string, unknown>) {

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Star } from "lucide-react";
 import type { Property } from "@/lib/types";
+import { getBookingAvailability } from "@/lib/api";
 import { Button } from "./ui/button";
 import { currency } from "@/lib/utils";
 
@@ -15,10 +16,30 @@ export function BookingPanel({ property }: { property: Property }) {
   const [checkIn, setCheckIn] = useState(today.toISOString().slice(0, 10));
   const [checkOut, setCheckOut] = useState(later.toISOString().slice(0, 10));
   const [guests, setGuests] = useState("2");
+  const [checking, setChecking] = useState(false);
+  const [notice, setNotice] = useState("");
 
-  function submit(event: FormEvent) {
+  async function submit(event: FormEvent) {
     event.preventDefault();
-    router.push(`/checkout/${property.slug}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+    setNotice("");
+    setChecking(true);
+    try {
+      const availability = await getBookingAvailability(property.id, checkIn, checkOut);
+      if (!availability.available) {
+        setNotice("Those nights have already been reserved. Please choose another stay window.");
+        return;
+      }
+
+      router.push(`/checkout/${property.slug}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`);
+    } catch (reason) {
+      setNotice(
+        reason instanceof Error
+          ? reason.message
+          : "We couldn't confirm those dates right now. Please try a different stay window."
+      );
+    } finally {
+      setChecking(false);
+    }
   }
 
   return (
@@ -43,7 +64,14 @@ export function BookingPanel({ property }: { property: Property }) {
           </select>
         </label>
       </div>
-      <Button type="submit" className="mt-4 w-full rounded-xl">Check availability</Button>
+      {notice ? (
+        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">
+          {notice}
+        </div>
+      ) : null}
+      <Button type="submit" disabled={checking} className="mt-4 w-full rounded-xl">
+        {checking ? "Checking live dates…" : "Check availability"}
+      </Button>
       <p className="mt-4 text-center text-xs text-ink/45">You won&apos;t be charged yet.</p>
     </form>
   );

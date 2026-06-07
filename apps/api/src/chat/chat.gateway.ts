@@ -37,19 +37,21 @@ export class ChatGateway implements OnGatewayConnection {
   ) {
     const message = await this.database.createMessage(body);
     client.to(body.conversationId).emit("message", message);
-    client.emit("assistant:typing", { active: true });
+    if (body.conversationId === "website-lobby") {
+      client.emit("assistant:typing", { active: true });
 
-    const reply = this.support.reply(body.text);
-    const assistantMessage = await this.database.createMessage({
-      conversationId: body.conversationId,
-      author: "team",
-      text: reply.text
-    });
+      const reply = this.support.reply(body.text);
+      const assistantMessage = await this.database.createMessage({
+        conversationId: body.conversationId,
+        author: "team",
+        text: reply.text
+      });
 
-    setTimeout(() => {
-      client.emit("assistant:typing", { active: false });
-      client.emit("message", { ...assistantMessage, suggestions: reply.suggestions });
-    }, 650);
+      setTimeout(() => {
+        client.emit("assistant:typing", { active: false });
+        client.emit("message", { ...assistantMessage, suggestions: reply.suggestions });
+      }, 650);
+    }
 
     return { delivered: true };
   }

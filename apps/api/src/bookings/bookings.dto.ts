@@ -42,3 +42,8 @@ export class CreateBookingDto extends QuoteDto {
   @IsString()
   cardCvv!: string;
 }
+
+export class ExtendStayDto {
+  @IsDateString()
+  checkOut!: string;
+}

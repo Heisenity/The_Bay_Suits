@@ -44,7 +44,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               {property.amenities.map((amenity) => <p key={amenity} className="flex items-center gap-3 text-sm"><Check className="h-4 w-4 text-champagne" /> {amenity}</p>)}
             </div>
           </div>
-          <BookingCalendarPreview />
+          <BookingCalendarPreview propertyId={property.id} />
           <div className="grid gap-3 border-t border-ink/10 py-9 sm:grid-cols-3">
             {[
               [ShieldCheck, "Secure booking", "Protected reservation flow"],
