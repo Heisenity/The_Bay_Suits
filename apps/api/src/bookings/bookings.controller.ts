@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import { BookingsService } from "./bookings.service";
-import { CreateBookingDto, ExtendStayDto, QuoteDto } from "./bookings.dto";
+import { CreateBookingDto, CreateCalendarBlockDto, ExtendStayDto, QuoteDto } from "./bookings.dto";
 
 @Controller("bookings")
 export class BookingsController {
@@ -14,6 +14,21 @@ export class BookingsController {
   @Post()
   create(@Body() input: CreateBookingDto) {
     return this.bookings.create(input);
+  }
+
+  @Get("admin/blocks")
+  listCalendarBlocks(@Query("propertyId") propertyId?: string) {
+    return this.bookings.listCalendarBlocks(propertyId);
+  }
+
+  @Post("admin/blocks")
+  createCalendarBlock(@Body() input: CreateCalendarBlockDto) {
+    return this.bookings.createCalendarBlock(input);
+  }
+
+  @Post("admin/blocks/:blockId/remove")
+  removeCalendarBlock(@Param("blockId") blockId: string) {
+    return this.bookings.removeCalendarBlock(blockId);
   }
 
   @Get("calendar/:propertyId")

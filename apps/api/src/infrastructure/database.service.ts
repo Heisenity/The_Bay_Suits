@@ -18,6 +18,15 @@ export type BookingRecord = {
   createdAt: string;
 };
 
+export type CalendarBlockRecord = {
+  id: string;
+  propertyId: string;
+  checkIn: string;
+  checkOut: string;
+  note?: string;
+  createdAt: string;
+};
+
 type MessageRecord = {
   id: string;
   conversationId: string;
@@ -31,6 +40,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DatabaseService.name);
   private pool?: Pool;
   private bookings: BookingRecord[] = [];
+  private calendarBlocks: CalendarBlockRecord[] = [];
   private leads: Array<Record<string, unknown>> = [];
   private messages: MessageRecord[] = [];
 
@@ -49,6 +59,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
          created_at::text as "createdAt" from bookings`
       );
       this.bookings = result.rows;
+      const blockResult = await this.pool.query<CalendarBlockRecord>(
+        `select id, property_id as "propertyId", check_in::text as "checkIn", check_out::text as "checkOut",
+         note, created_at::text as "createdAt" from calendar_blocks`
+      );
+      this.calendarBlocks = blockResult.rows;
       const messageResult = await this.pool.query<MessageRecord>(
         `select id, conversation_id as "conversationId", author, body as text, created_at::text as "createdAt"
          from messages
@@ -100,6 +115,16 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         body text not null,
         created_at timestamptz not null default now()
       );
+      create table if not exists calendar_blocks (
+        id uuid primary key,
+        property_id varchar(80) not null,
+        check_in date not null,
+        check_out date not null,
+        note text,
+        created_at timestamptz not null default now(),
+        constraint valid_calendar_block_dates check (check_out > check_in)
+      );
+      create index if not exists calendar_blocks_property_dates_idx on calendar_blocks(property_id, check_in, check_out);
       create table if not exists webhook_events (
         id uuid primary key,
         provider varchar(80) not null,
@@ -114,22 +139,38 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.bookings;
   }
 
+  listCalendarBlocks(propertyId?: string) {
+    const list = propertyId
+      ? this.calendarBlocks.filter((block) => block.propertyId === propertyId)
+      : this.calendarBlocks;
+    return list
+      .slice()
+      .sort((left, right) => left.checkIn.localeCompare(right.checkIn) || left.createdAt.localeCompare(right.createdAt));
+  }
+
   findBookingByConfirmation(confirmation: string) {
     return this.bookings.find((booking) => booking.confirmation.toUpperCase() === confirmation.toUpperCase());
   }
 
   hasOverlap(propertyId: string, checkIn: string, checkOut: string) {
-    return this.bookings.some(
+    const bookingOverlap = this.bookings.some(
       (booking) =>
         booking.propertyId === propertyId &&
         booking.status !== "cancelled" &&
         checkIn < booking.checkOut &&
         checkOut > booking.checkIn
     );
+    if (bookingOverlap) return true;
+    return this.calendarBlocks.some(
+      (block) =>
+        block.propertyId === propertyId &&
+        checkIn < block.checkOut &&
+        checkOut > block.checkIn
+    );
   }
 
   hasOverlapExcludingBooking(propertyId: string, checkIn: string, checkOut: string, bookingId: string) {
-    return this.bookings.some(
+    const bookingOverlap = this.bookings.some(
       (booking) =>
         booking.id !== bookingId &&
         booking.propertyId === propertyId &&
@@ -137,6 +178,35 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
         checkIn < booking.checkOut &&
         checkOut > booking.checkIn
     );
+    if (bookingOverlap) return true;
+    return this.calendarBlocks.some(
+      (block) =>
+        block.propertyId === propertyId &&
+        checkIn < block.checkOut &&
+        checkOut > block.checkIn
+    );
+  }
+
+  async createCalendarBlock(record: Omit<CalendarBlockRecord, "id" | "createdAt">) {
+    const block: CalendarBlockRecord = { ...record, id: randomUUID(), createdAt: new Date().toISOString() };
+    if (this.pool) {
+      await this.pool.query(
+        `insert into calendar_blocks (id, property_id, check_in, check_out, note)
+         values ($1,$2,$3,$4,$5)`,
+        [block.id, block.propertyId, block.checkIn, block.checkOut, block.note || null]
+      );
+    }
+    this.calendarBlocks.push(block);
+    return block;
+  }
+
+  async removeCalendarBlock(blockId: string) {
+    if (this.pool) {
+      await this.pool.query("delete from calendar_blocks where id = $1", [blockId]);
+    }
+    const existing = this.calendarBlocks.find((block) => block.id === blockId);
+    this.calendarBlocks = this.calendarBlocks.filter((block) => block.id !== blockId);
+    return existing;
   }
 
   async createBooking(record: Omit<BookingRecord, "id" | "createdAt">) {

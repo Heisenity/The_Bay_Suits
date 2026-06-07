@@ -90,4 +90,15 @@ export type PropertyMonthAvailability = {
   daysInMonth: number;
   startsOn: number;
   reservedDays: number[];
+  blockedDays: number[];
+};
+
+export type CalendarBlock = {
+  id: string;
+  propertyId: string;
+  propertyName?: string;
+  checkIn: string;
+  checkOut: string;
+  note?: string;
+  createdAt: string;
 };

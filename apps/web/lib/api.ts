@@ -1,5 +1,13 @@
 import { properties } from "./data";
-import type { Booking, BookingQuote, BookingReservation, ChatMessage, Property, PropertyMonthAvailability } from "./types";
+import type {
+  Booking,
+  BookingQuote,
+  BookingReservation,
+  CalendarBlock,
+  ChatMessage,
+  Property,
+  PropertyMonthAvailability
+} from "./types";
 import { nightsBetween } from "./utils";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -51,7 +59,10 @@ export async function getQuote(input: {
       method: "POST",
       body: JSON.stringify(input)
     });
-  } catch {
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") {
+      throw error;
+    }
     const property = properties.find((item) => item.id === input.propertyId)!;
     const nights = nightsBetween(input.checkIn, input.checkOut);
     const accommodation = nights * property.price;
@@ -112,6 +123,29 @@ export async function getBookingAvailability(propertyId: string, checkIn: string
   return request<{ propertyId: string; checkIn: string; checkOut: string; available: boolean }>(
     `/bookings/availability/${encodeURIComponent(propertyId)}?checkIn=${encodeURIComponent(checkIn)}&checkOut=${encodeURIComponent(checkOut)}`
   );
+}
+
+export async function getAdminCalendarBlocks(propertyId?: string) {
+  const query = propertyId ? `?propertyId=${encodeURIComponent(propertyId)}` : "";
+  return request<CalendarBlock[]>(`/bookings/admin/blocks${query}`);
+}
+
+export async function createAdminCalendarBlock(payload: {
+  propertyId: string;
+  checkIn: string;
+  checkOut: string;
+  note?: string;
+}) {
+  return request<CalendarBlock>("/bookings/admin/blocks", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
+export async function removeAdminCalendarBlock(blockId: string) {
+  return request<{ success: boolean }>(`/bookings/admin/blocks/${encodeURIComponent(blockId)}/remove`, {
+    method: "POST"
+  });
 }
 
 export async function submitLead(path: "contacts" | "assessments", payload: Record<string, unknown>) {

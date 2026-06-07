@@ -47,3 +47,18 @@ export class ExtendStayDto {
   @IsDateString()
   checkOut!: string;
 }
+
+export class CreateCalendarBlockDto {
+  @IsString()
+  propertyId!: string;
+
+  @IsDateString()
+  checkIn!: string;
+
+  @IsDateString()
+  checkOut!: string;
+
+  @IsOptional()
+  @IsString()
+  note?: string;
+}

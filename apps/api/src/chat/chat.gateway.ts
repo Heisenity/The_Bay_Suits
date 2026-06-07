@@ -30,6 +30,15 @@ export class ChatGateway implements OnGatewayConnection {
     return { joined: body.conversationId };
   }
 
+  @SubscribeMessage("typing")
+  typing(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() body: { conversationId: string; author: string; active: boolean }
+  ) {
+    client.to(body.conversationId).emit("typing", body);
+    return { delivered: true };
+  }
+
   @SubscribeMessage("message")
   async message(
     @ConnectedSocket() client: Socket,

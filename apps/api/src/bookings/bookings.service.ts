@@ -6,7 +6,7 @@ import { CacheService } from "../infrastructure/cache.service";
 import { DatabaseService } from "../infrastructure/database.service";
 import { MailService } from "../infrastructure/mail.service";
 import { QueueService } from "../infrastructure/queue.service";
-import { CreateBookingDto, QuoteDto } from "./bookings.dto";
+import { CreateBookingDto, CreateCalendarBlockDto, QuoteDto } from "./bookings.dto";
 
 @Injectable()
 export class BookingsService {
@@ -27,6 +27,9 @@ export class BookingsService {
     const nights = Math.round((end.getTime() - start.getTime()) / 86400000);
     if (!Number.isFinite(nights) || nights < 1) throw new BadRequestException("Check-out must be after check-in");
     if (input.guests > property.guests) throw new BadRequestException("Guest count exceeds property capacity");
+    if (this.database.hasOverlap(input.propertyId, input.checkIn, input.checkOut)) {
+      throw new ConflictException("Those dates are already unavailable. Please choose another stay window.");
+    }
     const accommodation = nights * property.price;
     const cleaningFee = property.bedrooms > 2 ? 135 : 95;
     const serviceFee = Math.round(accommodation * 0.08);
@@ -231,6 +234,7 @@ export class BookingsService {
     const nextMonthStart = new Date(Date.UTC(year, monthIndex + 1, 1));
     const daysInMonth = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
     const reservedDays = new Set<number>();
+    const blockedDays = new Set<number>();
 
     for (const booking of this.database.listBookings()) {
       if (booking.propertyId !== propertyId || booking.status === "cancelled") continue;
@@ -246,13 +250,65 @@ export class BookingsService {
       }
     }
 
+    for (const block of this.database.listCalendarBlocks(propertyId)) {
+      const blockStart = new Date(`${block.checkIn}T00:00:00Z`);
+      const blockEnd = new Date(`${block.checkOut}T00:00:00Z`);
+      if (blockEnd <= monthStart || blockStart >= nextMonthStart) continue;
+
+      const rangeStart = new Date(Math.max(blockStart.getTime(), monthStart.getTime()));
+      const rangeEnd = new Date(Math.min(blockEnd.getTime(), nextMonthStart.getTime()));
+
+      for (let cursor = new Date(rangeStart); cursor < rangeEnd; cursor.setUTCDate(cursor.getUTCDate() + 1)) {
+        blockedDays.add(cursor.getUTCDate());
+        reservedDays.add(cursor.getUTCDate());
+      }
+    }
+
     return {
       propertyId,
       month,
       monthLabel: monthStart.toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" }),
       daysInMonth,
       startsOn: monthStart.getUTCDay(),
-      reservedDays: [...reservedDays].sort((left, right) => left - right)
+      reservedDays: [...reservedDays].sort((left, right) => left - right),
+      blockedDays: [...blockedDays].sort((left, right) => left - right)
+    };
+  }
+
+  listCalendarBlocks(propertyId?: string) {
+    return this.database.listCalendarBlocks(propertyId);
+  }
+
+  async createCalendarBlock(input: CreateCalendarBlockDto) {
+    const property = properties.find((item) => item.id === input.propertyId);
+    if (!property) throw new NotFoundException("Property not found");
+    if (input.checkOut <= input.checkIn) {
+      throw new BadRequestException("Check-out must be after check-in");
+    }
+    if (this.database.hasOverlap(input.propertyId, input.checkIn, input.checkOut)) {
+      throw new ConflictException("That slot is already reserved or blocked.");
+    }
+
+    const block = await this.database.createCalendarBlock({
+      propertyId: input.propertyId,
+      checkIn: input.checkIn,
+      checkOut: input.checkOut,
+      note: input.note
+    });
+
+    this.cache.invalidate("availability:");
+    return {
+      ...block,
+      propertyName: property.name
+    };
+  }
+
+  async removeCalendarBlock(blockId: string) {
+    const block = await this.database.removeCalendarBlock(blockId);
+    if (!block) throw new NotFoundException("Calendar block not found");
+    this.cache.invalidate("availability:");
+    return {
+      success: true
     };
   }
 
