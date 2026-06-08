@@ -445,10 +445,10 @@ export default function OwnerPortalPage() {
                   <label className="min-w-0">
                     <span className="mb-2 block text-xs font-semibold text-ink/55">Reason or note</span>
                     <textarea
-                      className="field admin-note-field min-w-0 max-w-full h-24 resize-none py-3 text-sm leading-6"
+                      className="field admin-note-field min-w-0 max-w-full h-28 resize-none py-3.5 text-[13px] leading-5"
                       value={blockNote}
                       onChange={(event) => setBlockNote(event.target.value)}
-                      placeholder="Owner stay, maintenance, offline hold, VIP reservation..."
+                      placeholder={"Owner stay, maintenance,\noffline hold, VIP note"}
                     />
                   </label>
                   <Button onClick={submitBlock} disabled={createBlock.isPending} className="w-full rounded-xl">
