@@ -182,6 +182,14 @@ select.field {
   @apply text-[0.95rem] leading-none;
 }
 
+.admin-date-shell {
+  @apply min-w-0 overflow-hidden rounded-xl border border-ink/15 bg-white;
+}
+
+.admin-date-shell .admin-date-field {
+  @apply block h-12 w-full rounded-none border-0 bg-transparent pr-3 shadow-none focus:border-0 focus:ring-0;
+}
+
 .admin-date-field::-webkit-date-and-time-value {
   text-align: left;
 }
